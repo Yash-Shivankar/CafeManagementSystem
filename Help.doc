@@ -1,0 +1,5 @@
+Commands
+alembic revision --autogenerate -m "initial tables"
+alembic revision --autogenerate -m "add created_by and updated_by"
+alembic upgrade head
+py manage.py seed-all
