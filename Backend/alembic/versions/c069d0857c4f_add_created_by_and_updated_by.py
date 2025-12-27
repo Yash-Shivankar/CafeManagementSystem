@@ -1,8 +1,8 @@
-"""Add created_by and updated_by
+"""add created_by and updated_by
 
-Revision ID: bc6b513bffac
-Revises: a341fb1e3058
-Create Date: 2025-12-14 00:04:55.863811
+Revision ID: c069d0857c4f
+Revises: 41562847d3f2
+Create Date: 2025-12-27 19:00:03.648937
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bc6b513bffac'
-down_revision: Union[str, Sequence[str], None] = 'a341fb1e3058'
+revision: str = 'c069d0857c4f'
+down_revision: Union[str, Sequence[str], None] = '41562847d3f2'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -35,32 +35,32 @@ def upgrade() -> None:
     op.create_foreign_key(None, 'customer_invoices', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('departments', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('departments', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'departments', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'departments', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'departments', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('designations', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('designations', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'designations', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'designations', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('employee_attendance', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('employee_attendance', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'employee_attendance', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'employee_attendance', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'employee_attendance', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('employee_details', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('employee_details', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'employee_details', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'employee_details', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('employee_documents', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('employee_documents', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'employee_documents', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'employee_documents', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'employee_documents', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('employee_performance', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('employee_performance', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'employee_performance', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'employee_performance', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('incentives', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('incentives', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'incentives', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'incentives', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'incentives', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('increment_history', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('increment_history', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'increment_history', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
@@ -71,12 +71,12 @@ def upgrade() -> None:
     op.create_foreign_key(None, 'inventory_categories', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('inventory_items', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('inventory_items', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'inventory_items', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'inventory_items', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'inventory_items', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('inventory_logs', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('inventory_logs', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'inventory_logs', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'inventory_logs', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'inventory_logs', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('payments', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('payments', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'payments', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
@@ -95,16 +95,16 @@ def upgrade() -> None:
     op.create_foreign_key(None, 'salary_payments', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('salary_structures', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('salary_structures', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'salary_structures', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'salary_structures', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'salary_structures', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('services', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('services', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'services', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'services', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('tables', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('tables', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
-    op.create_foreign_key(None, 'tables', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.create_foreign_key(None, 'tables', 'users', ['created_by'], ['id'], initially='DEFERRED', deferrable=True)
+    op.create_foreign_key(None, 'tables', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)
     op.add_column('users', sa.Column('created_by', sa.Integer(), nullable=True, comment='User ID who created this record'))
     op.add_column('users', sa.Column('updated_by', sa.Integer(), nullable=True, comment='User ID who last updated this record'))
     op.create_foreign_key(None, 'users', 'users', ['updated_by'], ['id'], initially='DEFERRED', deferrable=True)

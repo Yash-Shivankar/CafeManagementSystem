@@ -16,6 +16,12 @@ class RegisterSchema(BaseModel):
     class Config:
         from_attributes = True
 
+    @model_validator(mode="after")
+    def validate_login_identifier(self):
+        if not self.email and not self.mobile_number:
+            raise ValueError("Either email or mobile_number is required")
+        return self
+
 
 class LoginSchema(BaseModel):
     email: Optional[EmailStr] = None

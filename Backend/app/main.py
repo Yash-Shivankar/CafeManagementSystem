@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.core.config import settings
-from app.routes import auth
+from app.routes import api_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -8,7 +8,7 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 
-app.include_router(auth.router)
+app.include_router(api_router)
 
 
 @app.get("/")

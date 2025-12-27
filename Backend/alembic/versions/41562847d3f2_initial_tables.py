@@ -1,8 +1,8 @@
-"""all models
+"""initial tables
 
-Revision ID: a341fb1e3058
+Revision ID: 41562847d3f2
 Revises: 
-Create Date: 2025-12-14 00:03:58.790760
+Create Date: 2025-12-27 18:59:35.159279
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a341fb1e3058'
+revision: str = '41562847d3f2'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,7 +28,8 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('department_name')
     )
     op.create_index(op.f('ix_departments_id'), 'departments', ['id'], unique=False)
     op.create_table('designations',
@@ -38,7 +39,8 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('designation_name')
     )
     op.create_index(op.f('ix_designations_id'), 'designations', ['id'], unique=False)
     op.create_table('inventory_categories',
@@ -76,6 +78,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
+    op.create_index(op.f('ix_roles_role_name'), 'roles', ['role_name'], unique=True)
     op.create_table('services',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
@@ -115,6 +118,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_inventory_items_id'), 'inventory_items', ['id'], unique=False)
+    op.create_index(op.f('ix_inventory_items_name'), 'inventory_items', ['name'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('first_name', sa.String(length=255), nullable=True),
@@ -238,6 +242,7 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
+    sa.CheckConstraint('check_out IS NULL OR check_out >= check_in', name='ck_check_out_after_check_in'),
     sa.ForeignKeyConstraint(['employee_id'], ['employee_details.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('employee_id', 'date', 'session', name='uq_employee_attendance_session')
@@ -388,12 +393,14 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
+    op.drop_index(op.f('ix_inventory_items_name'), table_name='inventory_items')
     op.drop_index(op.f('ix_inventory_items_id'), table_name='inventory_items')
     op.drop_table('inventory_items')
     op.drop_index(op.f('ix_tables_id'), table_name='tables')
     op.drop_table('tables')
     op.drop_index(op.f('ix_services_id'), table_name='services')
     op.drop_table('services')
+    op.drop_index(op.f('ix_roles_role_name'), table_name='roles')
     op.drop_index(op.f('ix_roles_id'), table_name='roles')
     op.drop_table('roles')
     op.drop_index(op.f('ix_profit_loss_id'), table_name='profit_loss')
