@@ -35,6 +35,17 @@ class LoginSchema(BaseModel):
         return self
 
 
+class UserResponseSchema(BaseModel):
+    id: int
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    role: str
+
+    class Config:
+        from_attributes = True
+
+
 class TokenSchema(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    user: UserResponseSchema

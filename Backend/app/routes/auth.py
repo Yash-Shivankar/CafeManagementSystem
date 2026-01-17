@@ -97,4 +97,10 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role.role_name,
+        },
     }

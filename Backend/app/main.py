@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routes import api_router
 
@@ -6,6 +7,15 @@ app = FastAPI(
     title=settings.APP_NAME,
     description="A comprehensive backend for a modern cafe.",
     debug=settings.DEBUG,
+)
+
+# ✅ Open CORS for all
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 app.include_router(api_router)

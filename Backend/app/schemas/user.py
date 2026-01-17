@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, model_validator
 
 
@@ -36,10 +36,21 @@ class UserUpdate(UserBase):
 # Schema used for responses (output)
 class UserOut(UserBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    mobile_number: Optional[str] = None
+    role_id: Optional[int] = None
+    date_of_birth: Optional[date] = None
+    gender: Optional[str] = None
+    is_active: Optional[bool] = True
 
     class Config:
         from_attributes = True  # allows ORM models to be returned directly
+
+
+class PaginatedUserOut(BaseModel):
+    data: List[UserOut]
+    total: int
+    totalPages: int
+    currentPage: int

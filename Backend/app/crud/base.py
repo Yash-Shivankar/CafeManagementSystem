@@ -31,6 +31,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             .all()
         )
 
+    def get_multi_paginated(self, db: Session, skip: int = 0, limit: int = 100):
+        query = db.query(self.model).filter(self.model.is_deleted == False)
+
+        total = query.count()
+
+        users = query.offset(skip).limit(limit).all()
+
+        return users, total
+
     def create(self, db: Session, obj_in: CreateSchemaType, current_user=None):
         data = obj_in.dict(exclude={"password"})  # handle password separately
         if hasattr(obj_in, "password"):

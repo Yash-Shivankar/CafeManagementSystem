@@ -33,9 +33,6 @@ class EmployeeDetails(Common):
     department_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
     designation_id = Column(Integer, ForeignKey("designations.id"), nullable=False)
 
-    user = relationship("User", back_populates="employee_details")
-    department = relationship("Department", back_populates="employees")
-    designation = relationship("Designation", back_populates="employees")
     user = relationship(
         "User",
         foreign_keys=[user_id],
