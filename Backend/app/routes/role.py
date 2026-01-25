@@ -1,12 +1,13 @@
 # app/rotes/roles.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.Role import Role
-from app.schemas.role import RoleCreate, RoleUpdate, RoleOut
+from app.schemas.role import RoleCreate, RoleUpdate, RoleOut, PaginatedRoleOut
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/roles", tags=["Roles"])
 role_crud = CRUDBase[Role, RoleCreate, RoleUpdate](Role)
@@ -26,9 +27,21 @@ def get_role(role_id: int, db: Session = Depends(get_db)):
     return role_crud.get(db, role_id)
 
 
-@router.get("/", response_model=List[RoleOut])
-def list_roles(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return role_crud.get_multi(db, skip=skip, limit=limit)
+@router.get("/", response_model=PaginatedRoleOut)
+def list_roles(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    skip = (page - 1) * limit
+    roles, total = role_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": roles,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{role_id}", response_model=RoleOut)

@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr, model_validator
+from app.schemas.role import RoleOut
 
 
 # Base schema with shared fields
@@ -19,7 +20,7 @@ class UserBase(BaseModel):
 
 # Schema used for creation
 class UserCreate(UserBase):
-    password: str
+    password: Optional[str] = None
 
     @model_validator(mode="after")
     def validate_login_identifier(self):
@@ -34,13 +35,13 @@ class UserUpdate(UserBase):
 
 
 # Schema used for responses (output)
-class UserOut(UserBase):
+class UserOut(BaseModel):
     id: int
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[EmailStr] = None
     mobile_number: Optional[str] = None
-    role_id: Optional[int] = None
+    role: Optional[RoleOut]
     date_of_birth: Optional[date] = None
     gender: Optional[str] = None
     is_active: Optional[bool] = True

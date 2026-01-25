@@ -1,6 +1,6 @@
 # app/crud/base.py
-from typing import Generic, TypeVar, Type
-from sqlalchemy.orm import Session
+from typing import Generic, TypeVar, Type, Optional
+from sqlalchemy.orm import Session, selectinload
 from pydantic import BaseModel
 from app.core.security import hash_password
 from datetime import datetime
@@ -31,8 +31,22 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             .all()
         )
 
-    def get_multi_paginated(self, db: Session, skip: int = 0, limit: int = 100):
+    def get_multi_paginated(
+        self,
+        db: Session,
+        skip: int = 0,
+        limit: int = 100,
+        filters: Optional[list] = None,
+        relationships: Optional[list[str]] = None,
+    ):
         query = db.query(self.model).filter(self.model.is_deleted == False)
+        if filters:
+            for condition in filters:
+                query = query.filter(condition)
+        if relationships:
+            query = query.options(
+                *[selectinload(getattr(self.model, rel)) for rel in relationships]
+            )
 
         total = query.count()
 
@@ -42,7 +56,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def create(self, db: Session, obj_in: CreateSchemaType, current_user=None):
         data = obj_in.dict(exclude={"password"})  # handle password separately
-        if hasattr(obj_in, "password"):
+        if hasattr(obj_in, "password") and obj_in.password:
             data["hashed_password"] = hash_password(obj_in.password)
         if current_user:
             data["created_by"] = current_user.id
@@ -67,10 +81,30 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         obj = db.query(self.model).get(id)
         if not obj:
             return None
+
+        deleted_at = datetime.utcnow()
         obj.is_deleted = True
-        obj.deleted_at = datetime.utcnow()
+        obj.deleted_at = deleted_at
+
+        if hasattr(obj, "email") and obj.email:
+            obj.email = f"{obj.email}_{deleted_at.strftime('%Y%m%d%H%M%S')}"
+
+        if hasattr(obj, "mobile_number") and obj.mobile_number:
+            obj.mobile_number = (
+                f"{obj.mobile_number}_{deleted_at.strftime('%Y%m%d%H%M%S')}"
+            )
+
+        # Update unique fields to prevent constraint conflict
+        for col in self.model.__table__.columns:
+            if col.unique:
+                current_value = getattr(obj, col.name)
+                if current_value is not None:
+                    new_value = f"{current_value}_{deleted_at.strftime('%Y%m%d%H%M%S')}"
+                    setattr(obj, col.name, new_value)
+
         if current_user:
             obj.updated_by = current_user.id
+
         db.commit()
         db.refresh(obj)
         return obj

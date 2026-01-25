@@ -1,5 +1,5 @@
 # app/api/routes/users.py
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.crud.base import CRUDBase
@@ -14,6 +14,24 @@ crud_user = CRUDBase[User, UserCreate, UserUpdate](User)
 
 @router.post("/", response_model=UserOut)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    if user.email:
+        existing_email_user = db.query(User).filter(User.email == user.email).first()
+        if existing_email_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists",
+            )
+
+    # Check if mobile number already exists
+    if user.mobile_number:
+        existing_mobile_user = (
+            db.query(User).filter(User.mobile_number == user.mobile_number).first()
+        )
+        if existing_mobile_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this mobile number already exists",
+            )
     return crud_user.create(db, user)
 
 
@@ -25,7 +43,14 @@ def list_users(
 ):
     skip = (page - 1) * limit
 
-    users, total = crud_user.get_multi_paginated(db, skip=skip, limit=limit)
+    users, total = crud_user.get_multi_paginated(
+        db,
+        skip=skip,
+        limit=limit,
+        relationships=[
+            "role",
+        ],
+    )
 
     total_pages = ceil(total / limit)
 
@@ -48,6 +73,33 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 @router.put("/{user_id}", response_model=UserOut)
 def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     db_user = crud_user.get(db, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+
+    # Check email uniqueness excluding current user
+    if user.email:
+        existing_email_user = (
+            db.query(User).filter(User.email == user.email, User.id != user_id).first()
+        )
+        if existing_email_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
+            )
+
+    # Check mobile number uniqueness excluding current user
+    if user.mobile_number:
+        existing_mobile_user = (
+            db.query(User)
+            .filter(User.mobile_number == user.mobile_number, User.id != user_id)
+            .first()
+        )
+        if existing_mobile_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Mobile number already exists",
+            )
     return crud_user.update(db, db_user, user)
 
 

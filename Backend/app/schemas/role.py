@@ -1,6 +1,6 @@
 # app/schemas/role.py
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -18,12 +18,19 @@ class RoleUpdate(BaseModel):
 
 class RoleOut(RoleBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: Optional[bool] = False
+    # created_at: datetime
+    # updated_at: datetime
+    # created_by: Optional[int] = None
+    # updated_by: Optional[int] = None
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedRoleOut(BaseModel):
+    data: List[RoleOut]
+    total: int
+    totalPages: int
+    currentPage: int

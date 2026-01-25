@@ -23,6 +23,7 @@ from app.routes.salary_payment import router as salary_payment_router
 from app.routes.salary_structure import router as salary_structure_router
 from app.routes.service import router as service_router
 from app.routes.table import router as table_router
+from app.routes.app_settings import router as settings_router
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -49,3 +50,4 @@ api_router.include_router(salary_structure_router)
 api_router.include_router(service_router)
 api_router.include_router(table_router)
 api_router.include_router(user_router)
+api_router.include_router(settings_router)

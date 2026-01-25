@@ -20,3 +20,4 @@ from app.models.SalaryStructure import SalaryStructure
 from app.models.Service import Service
 from app.models.Table import Table
 from app.models.User import User
+from app.models.AppSettings import AppSettings
