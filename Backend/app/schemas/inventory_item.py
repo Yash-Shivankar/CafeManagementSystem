@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 from decimal import Decimal
@@ -38,8 +38,15 @@ class InventoryItemOut(InventoryItemBase):
     updated_at: datetime
     created_by: Optional[int]
     updated_by: Optional[int]
-    deleted_at: Optional[datetime]
-    is_deleted: bool
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedInventoryItemOut(BaseModel):
+    data: List[InventoryItemOut]
+    total: int
+    totalPages: int
+    currentPage: int

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -8,9 +8,11 @@ from app.schemas.incentives import (
     IncentiveCreate,
     IncentiveUpdate,
     IncentiveOut,
+    PaginatedIncentiveOut,
 )
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/incentives", tags=["Incentives"])
 
@@ -38,13 +40,30 @@ def get_incentive(
     return incentive_crud.get(db, incentive_id)
 
 
-@router.get("/", response_model=List[IncentiveOut])
+# @router.get("/", response_model=List[IncentiveOut])
+# def list_incentives(
+#     skip: int = 0,
+#     limit: int = 100,
+#     db: Session = Depends(get_db),
+# ):
+#     return incentive_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedIncentiveOut)
 def list_incentives(
-    skip: int = 0,
-    limit: int = 100,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    return incentive_crud.get_multi(db, skip=skip, limit=limit)
+    skip = (page - 1) * limit
+    incentives, total = incentive_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": incentives,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{incentive_id}", response_model=IncentiveOut)

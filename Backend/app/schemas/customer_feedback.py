@@ -1,6 +1,6 @@
 # app/schemas/customer_feedback.py
 from datetime import datetime
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 from pydantic import BaseModel, Field
 
 
@@ -27,8 +27,15 @@ class CustomerFeedbackOut(CustomerFeedbackBase):
     updated_at: datetime
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: Optional[bool] = False
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedCustomerFeedbackOut(BaseModel):
+    data: List[CustomerFeedbackOut]
+    total: int
+    totalPages: int
+    currentPage: int

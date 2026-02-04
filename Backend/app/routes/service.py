@@ -1,12 +1,18 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 
 from app.crud.base import CRUDBase
 from app.models.Service import Service
-from app.schemas.service import ServiceCreate, ServiceUpdate, ServiceOut
+from app.schemas.service import (
+    ServiceCreate,
+    ServiceUpdate,
+    ServiceOut,
+    PaginatedServiceOut,
+)
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/services", tags=["Services"])
 
@@ -34,13 +40,30 @@ def get_service(
     return service_crud.get(db, service_id)
 
 
-@router.get("/", response_model=List[ServiceOut])
-def list_service(
-    skip: int = 0,
-    limit: int = 100,
+# @router.get("/", response_model=List[ServiceOut])
+# def list_service(
+#     skip: int = 0,
+#     limit: int = 100,
+#     db: Session = Depends(get_db),
+# ):
+#     return service_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedServiceOut)
+def list_services(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    return service_crud.get_multi(db, skip=skip, limit=limit)
+    skip = (page - 1) * limit
+    services, total = service_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": services,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{service_id}", response_model=ServiceOut)

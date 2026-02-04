@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -30,8 +30,15 @@ class ServiceOut(ServiceBase):
     updated_at: datetime
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: bool
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedServiceOut(BaseModel):
+    data: List[ServiceOut]
+    total: int
+    totalPages: int
+    currentPage: int

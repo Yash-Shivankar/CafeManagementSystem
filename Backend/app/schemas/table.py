@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
@@ -26,7 +26,14 @@ class TableOut(TableBase):
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
     deleted_at: Optional[datetime] = None
-    is_deleted: bool
+    is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedTableOut(BaseModel):
+    data: List[TableOut]
+    total: int
+    totalPages: int
+    currentPage: int

@@ -18,10 +18,10 @@ class RoleUpdate(BaseModel):
 
 class RoleOut(RoleBase):
     id: int
-    # created_at: datetime
-    # updated_at: datetime
-    # created_by: Optional[int] = None
-    # updated_by: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+    created_by: Optional[int] = None
+    updated_by: Optional[int] = None
     # deleted_at: Optional[datetime] = None
     # is_deleted: Optional[bool] = False
 

@@ -1,12 +1,18 @@
 # app/api/designations.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.Designation import Designation
-from app.schemas.designation import DesignationCreate, DesignationUpdate, DesignationOut
+from app.schemas.designation import (
+    DesignationCreate,
+    DesignationUpdate,
+    DesignationOut,
+    PaginatedDesignationOut,
+)
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/designations", tags=["Designations"])
 designation_crud = CRUDBase[Designation, DesignationCreate, DesignationUpdate](
@@ -28,9 +34,28 @@ def get_designation(designation_id: int, db: Session = Depends(get_db)):
     return designation_crud.get(db, designation_id)
 
 
-@router.get("/", response_model=List[DesignationOut])
-def list_designations(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return designation_crud.get_multi(db, skip=skip, limit=limit)
+# @router.get("/", response_model=List[DesignationOut])
+# def list_designations(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return designation_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedDesignationOut)
+def list_designations(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    skip = (page - 1) * limit
+    designations, total = designation_crud.get_multi_paginated(
+        db, skip=skip, limit=limit
+    )
+    total_pages = ceil(total / limit)
+    return {
+        "data": designations,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{designation_id}", response_model=DesignationOut)

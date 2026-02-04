@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -10,7 +10,9 @@ from app.schemas.inventory_category import (
     InventoryCategoryCreate,
     InventoryCategoryUpdate,
     InventoryCategoryOut,
+    PaginatedInventoryCategoryOut,
 )
+from math import ceil
 
 router = APIRouter(
     prefix="/inventory-categories",
@@ -45,17 +47,34 @@ def get_category(
     return category_crud.get(db, category_id)
 
 
-@router.get("/", response_model=List[InventoryCategoryOut])
+# @router.get("/", response_model=List[InventoryCategoryOut])
+# def list_categories(
+#     skip: int = 0,
+#     limit: int = 100,
+#     db: Session = Depends(get_db),
+# ):
+#     return category_crud.get_multi(
+#         db=db,
+#         skip=skip,
+#         limit=limit,
+#     )
+
+
+@router.get("/", response_model=PaginatedInventoryCategoryOut)
 def list_categories(
-    skip: int = 0,
-    limit: int = 100,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    return category_crud.get_multi(
-        db=db,
-        skip=skip,
-        limit=limit,
-    )
+    skip = (page - 1) * limit
+    categories, total = category_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": categories,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{category_id}", response_model=InventoryCategoryOut)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -10,7 +10,9 @@ from app.schemas.inventory_item import (
     InventoryItemCreate,
     InventoryItemUpdate,
     InventoryItemOut,
+    PaginatedInventoryItemOut,
 )
+from math import ceil
 
 router = APIRouter(
     prefix="/inventory-items",
@@ -45,19 +47,36 @@ def get_inventory_item(
     return item_crud.get(db, item_id)
 
 
-@router.get("/", response_model=List[InventoryItemOut])
+# @router.get("/", response_model=List[InventoryItemOut])
+# def list_inventory_items(
+#     skip: int = 0,
+#     limit: int = 100,
+#     category_id: int | None = None,
+#     db: Session = Depends(get_db),
+# ):
+#     query = db.query(InventoryItem).filter(InventoryItem.is_deleted == False)
+
+#     if category_id:
+#         query = query.filter(InventoryItem.category_id == category_id)
+
+#     return query.offset(skip).limit(limit).all()
+
+
+@router.get("/", response_model=PaginatedInventoryItemOut)
 def list_inventory_items(
-    skip: int = 0,
-    limit: int = 100,
-    category_id: int | None = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    query = db.query(InventoryItem).filter(InventoryItem.is_deleted == False)
-
-    if category_id:
-        query = query.filter(InventoryItem.category_id == category_id)
-
-    return query.offset(skip).limit(limit).all()
+    skip = (page - 1) * limit
+    inventory_items, total = item_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": inventory_items,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{item_id}", response_model=InventoryItemOut)

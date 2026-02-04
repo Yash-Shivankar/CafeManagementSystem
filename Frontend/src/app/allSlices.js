@@ -14,7 +14,9 @@ export const allSlices = createApi({
       return headers;
     },
   }),
+
   endpoints: (builder) => ({
+    // Login
     login: builder.mutation({
       query: (payload) => ({
         url: "/auth/login/",
@@ -23,6 +25,7 @@ export const allSlices = createApi({
       }),
     }),
 
+    // ApplicationSettings
     getSettings: builder.query({
       query: (params = {}) => ({
         url: "/settings/",
@@ -65,48 +68,686 @@ export const allSlices = createApi({
       invalidatesTags: ["Settings"],
     }),
 
-    getUsers: builder.query({
+    // Bookings
+    getBookings: builder.query({
       query: (params = {}) => ({
-        url: "/users/",
+        url: "/bookings/",
         method: "GET",
         params,
       }),
-      providesTags: ["Users"],
+      providesTags: ["Bookings"],
     }),
-    getUserById: builder.query({
+    getBookingById: builder.query({
       query: (id) => ({
-        url: `/users/${id}`,
+        url: `/bookings/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Users", id }],
+      providesTags: (result, error, id) => [{ type: "Bookings", id }],
     }),
-    createUser: builder.mutation({
+    createBooking: builder.mutation({
       query: (body) => ({
-        url: "/users/",
+        url: "/bookings/",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Users"],
+      invalidatesTags: ["Bookings"],
     }),
-    updateUser: builder.mutation({
+    updateBooking: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/users/${id}`,
+        url: `/bookings/${id}`,
         method: "PUT",
         body,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "Users", id },
-        "Users",
+        { type: "Bookings", id },
+        "Bookings",
       ],
     }),
-    deleteUser: builder.mutation({
+    deleteBooking: builder.mutation({
       query: (id) => ({
-        url: `/users/${id}`,
+        url: `/bookings/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Users"],
+      invalidatesTags: ["Bookings"],
     }),
 
+    // Upload Document
+    uploadFile: builder.mutation({
+      query: (formData) => ({
+        url: "/common/upload/document/",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Files"],
+    }),
+
+    // CustomerFeedbacks
+    getCustomerFeedbacks: builder.query({
+      query: (params = {}) => ({
+        url: "/customer-feedbacks/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["CustomerFeedbacks"],
+    }),
+    getCustomerFeedbackById: builder.query({
+      query: (id) => ({
+        url: `/customer-feedbacks/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "CustomerFeedbacks", id }],
+    }),
+    createCustomerFeedback: builder.mutation({
+      query: (body) => ({
+        url: "/customer-feedbacks/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["CustomerFeedbacks"],
+    }),
+    updateCustomerFeedback: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/customer-feedbacks/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "CustomerFeedbacks", id },
+        "CustomerFeedbacks",
+      ],
+    }),
+    deleteCustomerFeedback: builder.mutation({
+      query: (id) => ({
+        url: `/customer-feedbacks/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["CustomerFeedbacks"],
+    }),
+
+    // CustomerInvoices
+    getCustomerInvoices: builder.query({
+      query: (params = {}) => ({
+        url: "/customer-invoices/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["CustomerInvoices"],
+    }),
+    getCustomerInvoiceById: builder.query({
+      query: (id) => ({
+        url: `/customer-invoices/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "CustomerInvoices", id }],
+    }),
+    createCustomerInvoice: builder.mutation({
+      query: (body) => ({
+        url: "/customer-invoices/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["CustomerInvoices"],
+    }),
+    updateCustomerInvoice: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/customer-invoices/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "CustomerInvoices", id },
+        "CustomerInvoices",
+      ],
+    }),
+    deleteCustomerInvoice: builder.mutation({
+      query: (id) => ({
+        url: `/customer-invoices/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["CustomerInvoices"],
+    }),
+
+    // Departments
+    getDepartments: builder.query({
+      query: (params = {}) => ({
+        url: "/departments/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Departments"],
+    }),
+    getDepartmentById: builder.query({
+      query: (id) => ({
+        url: `/departments/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Departments", id }],
+    }),
+    createDepartment: builder.mutation({
+      query: (body) => ({
+        url: "/departments/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Departments"],
+    }),
+    updateDepartment: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/departments/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Departments", id },
+        "Departments",
+      ],
+    }),
+    deleteDepartment: builder.mutation({
+      query: (id) => ({
+        url: `/departments/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Departments"],
+    }),
+
+    // Designation
+    getDesignations: builder.query({
+      query: (params = {}) => ({
+        url: "/designations/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Designations"],
+    }),
+    getDesignationById: builder.query({
+      query: (id) => ({
+        url: `/designations/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Designations", id }],
+    }),
+    createDesignation: builder.mutation({
+      query: (body) => ({
+        url: "/designations/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Designations"],
+    }),
+    updateDesignation: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/designations/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Designations", id },
+        "Designations",
+      ],
+    }),
+    deleteDesignation: builder.mutation({
+      query: (id) => ({
+        url: `/designations/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Designations"],
+    }),
+
+    // EmployeeAttendances
+    getEmployeeAttendances: builder.query({
+      query: (params = {}) => ({
+        url: "/employee-attendances/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["EmployeeAttendances"],
+    }),
+    getEmployeeAttendanceById: builder.query({
+      query: (id) => ({
+        url: `/employee-attendances/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [
+        { type: "EmployeeAttendances", id },
+      ],
+    }),
+    createEmployeeAttendance: builder.mutation({
+      query: (body) => ({
+        url: "/employee-attendances/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["EmployeeAttendances"],
+    }),
+    updateEmployeeAttendance: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/employee-attendances/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "EmployeeAttendances", id },
+        "EmployeeAttendances",
+      ],
+    }),
+    deleteEmployeeAttendance: builder.mutation({
+      query: (id) => ({
+        url: `/employee-attendances/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["EmployeeAttendances"],
+    }),
+
+    // EmployeeDetails
+    getEmployeeDetails: builder.query({
+      query: (params = {}) => ({
+        url: "/employee-details/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["EmployeeDetails"],
+    }),
+    getEmployeeDetailById: builder.query({
+      query: (id) => ({
+        url: `/employee-details/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "EmployeeDetails", id }],
+    }),
+    createEmployeeDetail: builder.mutation({
+      query: (body) => ({
+        url: "/employee-details/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["EmployeeDetails"],
+    }),
+    updateEmployeeDetail: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/employee-details/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "EmployeeDetails", id },
+        "EmployeeDetails",
+      ],
+    }),
+    deleteEmployeeDetail: builder.mutation({
+      query: (id) => ({
+        url: `/employee-details/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["EmployeeDetails"],
+    }),
+
+    // EmployeeDocuments
+    getEmployeeDocuments: builder.query({
+      query: (params = {}) => ({
+        url: "/employee-documents/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["EmployeeDocuments"],
+    }),
+    getEmployeeDocumentById: builder.query({
+      query: (id) => ({
+        url: `/employee-documents/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "EmployeeDocuments", id }],
+    }),
+    createEmployeeDocument: builder.mutation({
+      query: (body) => ({
+        url: "/employee-documents/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["EmployeeDocuments"],
+    }),
+    updateEmployeeDocument: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/employee-documents/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "EmployeeDocuments", id },
+        "EmployeeDocuments",
+      ],
+    }),
+    deleteEmployeeDocument: builder.mutation({
+      query: (id) => ({
+        url: `/employee-documents/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["EmployeeDocuments"],
+    }),
+
+    // EmployeePerformances
+    getEmployeePerformances: builder.query({
+      query: (params = {}) => ({
+        url: "/employee-performances/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["EmployeePerformances"],
+    }),
+    getEmployeePerformanceById: builder.query({
+      query: (id) => ({
+        url: `/employee-performances/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [
+        { type: "EmployeePerformances", id },
+      ],
+    }),
+    createEmployeePerformance: builder.mutation({
+      query: (body) => ({
+        url: "/employee-performances/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["EmployeePerformances"],
+    }),
+    updateEmployeePerformance: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/employee-performances/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "EmployeePerformances", id },
+        "EmployeePerformances",
+      ],
+    }),
+    deleteEmployeePerformance: builder.mutation({
+      query: (id) => ({
+        url: `/employee-performances/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["EmployeePerformances"],
+    }),
+
+    // Incentives
+    getIncentives: builder.query({
+      query: (params = {}) => ({
+        url: "/incentives/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Incentives"],
+    }),
+    getIncentiveById: builder.query({
+      query: (id) => ({
+        url: `/incentives/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Incentives", id }],
+    }),
+    createIncentive: builder.mutation({
+      query: (body) => ({
+        url: "/incentives/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Incentives"],
+    }),
+    updateIncentive: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/incentives/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Incentives", id },
+        "Incentives",
+      ],
+    }),
+    deleteIncentive: builder.mutation({
+      query: (id) => ({
+        url: `/incentives/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Incentives"],
+    }),
+
+    // IncrementHistories
+    getIncrementHistories: builder.query({
+      query: (params = {}) => ({
+        url: "/increment-histories/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["IncrementHistories"],
+    }),
+    getIncrementHistoryById: builder.query({
+      query: (id) => ({
+        url: `/increment-histories/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "IncrementHistories", id }],
+    }),
+    createIncrementHistory: builder.mutation({
+      query: (body) => ({
+        url: "/increment-histories/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["IncrementHistories"],
+    }),
+    updateIncrementHistory: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/increment-histories/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "IncrementHistories", id },
+        "IncrementHistories",
+      ],
+    }),
+    deleteIncrementHistory: builder.mutation({
+      query: (id) => ({
+        url: `/increment-histories/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["IncrementHistories"],
+    }),
+
+    // InventoryCategories
+    getInventoryCategories: builder.query({
+      query: (params = {}) => ({
+        url: "/inventory-categories/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["InventoryCategories"],
+    }),
+    getInventoryCategoryById: builder.query({
+      query: (id) => ({
+        url: `/inventory-categories/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [
+        { type: "InventoryCategories", id },
+      ],
+    }),
+    createInventoryCategory: builder.mutation({
+      query: (body) => ({
+        url: "/inventory-categories/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["InventoryCategories"],
+    }),
+    updateInventoryCategory: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/inventory-categories/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "InventoryCategories", id },
+        "InventoryCategories",
+      ],
+    }),
+    deleteInventoryCategory: builder.mutation({
+      query: (id) => ({
+        url: `/inventory-categories/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["InventoryCategories"],
+    }),
+
+    // InventoryItems
+    getInventoryItems: builder.query({
+      query: (params = {}) => ({
+        url: "/inventory-items/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["InventoryItems"],
+    }),
+    getInventoryItemById: builder.query({
+      query: (id) => ({
+        url: `/inventory-items/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "InventoryItems", id }],
+    }),
+    createInventoryItem: builder.mutation({
+      query: (body) => ({
+        url: "/inventory-items/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["InventoryItems"],
+    }),
+    updateInventoryItem: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/inventory-items/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "InventoryItems", id },
+        "InventoryItems",
+      ],
+    }),
+    deleteInventoryItem: builder.mutation({
+      query: (id) => ({
+        url: `/inventory-items/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["InventoryItems"],
+    }),
+
+    // InventoryLogs
+    getInventoryLogs: builder.query({
+      query: (params = {}) => ({
+        url: "/inventory-logs/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["InventoryLogs"],
+    }),
+    createInventoryLog: builder.mutation({
+      query: (body) => ({
+        url: "/inventory-logs/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["InventoryLogs"],
+    }),
+
+    // Payments
+    getPayments: builder.query({
+      query: (params = {}) => ({
+        url: "/payments/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Payments"],
+    }),
+    getPaymentById: builder.query({
+      query: (id) => ({
+        url: `/payments/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Payments", id }],
+    }),
+    createPayment: builder.mutation({
+      query: (body) => ({
+        url: "/payments/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Payments"],
+    }),
+    updatePayment: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/payments/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Payments", id },
+        "Payments",
+      ],
+    }),
+    deletePayment: builder.mutation({
+      query: (id) => ({
+        url: `/payments/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Payments"],
+    }),
+
+    // ProfitLoss
+    getProfitLossEntries: builder.query({
+      query: (params = {}) => ({
+        url: "/profit-loss/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["ProfitLoss"],
+    }),
+    getProfitLossById: builder.query({
+      query: (id) => ({
+        url: `/profit-loss/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "ProfitLoss", id }],
+    }),
+    createProfitLoss: builder.mutation({
+      query: (body) => ({
+        url: "/profit-loss/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["ProfitLoss"],
+    }),
+    updateProfitLoss: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/profit-loss/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "ProfitLoss", id },
+        "ProfitLoss",
+      ],
+    }),
+    deleteProfitLoss: builder.mutation({
+      query: (id) => ({
+        url: `/profit-loss/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ProfitLoss"],
+    }),
+
+    // Roles
     getRoles: builder.query({
       query: (params = {}) => ({
         url: "/roles/",
@@ -148,6 +789,221 @@ export const allSlices = createApi({
       }),
       invalidatesTags: ["Roles"],
     }),
+
+    // SalaryPayments
+    getSalaryPayments: builder.query({
+      query: (params = {}) => ({
+        url: "/salary-payments/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["SalaryPayments"],
+    }),
+    getSalaryPaymentById: builder.query({
+      query: (id) => ({
+        url: `/salary-payments/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "SalaryPayments", id }],
+    }),
+    createSalaryPayment: builder.mutation({
+      query: (body) => ({
+        url: "/salary-payments/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["SalaryPayments"],
+    }),
+    updateSalaryPayment: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/salary-payments/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "SalaryPayments", id },
+        "SalaryPayments",
+      ],
+    }),
+    deleteSalaryPayment: builder.mutation({
+      query: (id) => ({
+        url: `/salary-payments/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["SalaryPayments"],
+    }),
+
+    // SalaryStructures
+    getSalaryStructures: builder.query({
+      query: (params = {}) => ({
+        url: "/salary-structures/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["SalaryStructures"],
+    }),
+    getSalaryStructureById: builder.query({
+      query: (id) => ({
+        url: `/salary-structures/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "SalaryStructures", id }],
+    }),
+    createSalaryStructure: builder.mutation({
+      query: (body) => ({
+        url: "/salary-structures/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["SalaryStructures"],
+    }),
+    updateSalaryStructure: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/salary-structures/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "SalaryStructures", id },
+        "SalaryStructures",
+      ],
+    }),
+    deleteSalaryStructure: builder.mutation({
+      query: (id) => ({
+        url: `/salary-structures/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["SalaryStructures"],
+    }),
+
+    // Services
+    getServices: builder.query({
+      query: (params = {}) => ({
+        url: "/services/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Services"],
+    }),
+    getServiceById: builder.query({
+      query: (id) => ({
+        url: `/services/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Services", id }],
+    }),
+    createService: builder.mutation({
+      query: (body) => ({
+        url: "/services/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Services"],
+    }),
+    updateService: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/services/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Services", id },
+        "Services",
+      ],
+    }),
+    deleteService: builder.mutation({
+      query: (id) => ({
+        url: `/services/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Services"],
+    }),
+
+    // Tables
+    getTables: builder.query({
+      query: (params = {}) => ({
+        url: "/tables/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Tables"],
+    }),
+    getTableById: builder.query({
+      query: (id) => ({
+        url: `/tables/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Tables", id }],
+    }),
+    createTable: builder.mutation({
+      query: (body) => ({
+        url: "/tables/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Tables"],
+    }),
+    updateTable: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/tables/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Tables", id },
+        "Tables",
+      ],
+    }),
+    deleteTable: builder.mutation({
+      query: (id) => ({
+        url: `/tables/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Tables"],
+    }),
+
+    // Users
+    getUsers: builder.query({
+      query: (params = {}) => ({
+        url: "/users/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Users"],
+    }),
+    getUserById: builder.query({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Users", id }],
+    }),
+    createUser: builder.mutation({
+      query: (body) => ({
+        url: "/users/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Users"],
+    }),
+    updateUser: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/users/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Users", id },
+        "Users",
+      ],
+    }),
+    deleteUser: builder.mutation({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
@@ -161,12 +1017,117 @@ export const {
   useUpdateSettingMutation,
   useDeleteSettingMutation,
 
-  // Users
-  useGetUsersQuery,
-  useGetUserByIdQuery,
-  useCreateUserMutation,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
+  // Bookings
+  useGetBookingsQuery,
+  useGetBookingByIdQuery,
+  useCreateBookingMutation,
+  useUpdateBookingMutation,
+  useDeleteBookingMutation,
+
+  //  Upload Document
+  useUploadFileMutation,
+
+  // CustomerFeedbacks
+  useGetCustomerFeedbacksQuery,
+  useGetCustomerFeedbackByIdQuery,
+  useCreateCustomerFeedbackMutation,
+  useUpdateCustomerFeedbackMutation,
+  useDeleteCustomerFeedbackMutation,
+
+  // CustomerInvoices
+  useGetCustomerInvoicesQuery,
+  useGetCustomerInvoiceByIdQuery,
+  useCreateCustomerInvoiceMutation,
+  useUpdateCustomerInvoiceMutation,
+  useDeleteCustomerInvoiceMutation,
+
+  // Departments
+  useGetDepartmentsQuery,
+  useGetDepartmentByIdQuery,
+  useCreateDepartmentMutation,
+  useUpdateDepartmentMutation,
+  useDeleteDepartmentMutation,
+
+  // Designations
+  useGetDesignationsQuery,
+  useGetDesignationByIdQuery,
+  useCreateDesignationMutation,
+  useUpdateDesignationMutation,
+  useDeleteDesignationMutation,
+
+  // EmployeeAttendances
+  useGetEmployeeAttendancesQuery,
+  useGetEmployeeAttendanceByIdQuery,
+  useCreateEmployeeAttendanceMutation,
+  useUpdateEmployeeAttendanceMutation,
+  useDeleteEmployeeAttendanceMutation,
+
+  // EmployeeDetails
+  useGetEmployeeDetailsQuery,
+  useGetEmployeeDetailByIdQuery,
+  useCreateEmployeeDetailMutation,
+  useUpdateEmployeeDetailMutation,
+  useDeleteEmployeeDetailMutation,
+
+  // EmployeeDocuments
+  useGetEmployeeDocumentsQuery,
+  useGetEmployeeDocumentByIdQuery,
+  useCreateEmployeeDocumentMutation,
+  useUpdateEmployeeDocumentMutation,
+  useDeleteEmployeeDocumentMutation,
+
+  // EmployeePerformances
+  useGetEmployeePerformancesQuery,
+  useGetEmployeePerformanceByIdQuery,
+  useCreateEmployeePerformanceMutation,
+  useUpdateEmployeePerformanceMutation,
+  useDeleteEmployeePerformanceMutation,
+
+  // Incentives
+  useGetIncentivesQuery,
+  useGetIncentiveByIdQuery,
+  useCreateIncentiveMutation,
+  useUpdateIncentiveMutation,
+  useDeleteIncentiveMutation,
+
+  // IncrementHistories
+  useGetIncrementHistoriesQuery,
+  useGetIncrementHistoryByIdQuery,
+  useCreateIncrementHistoryMutation,
+  useUpdateIncrementHistoryMutation,
+  useDeleteIncrementHistoryMutation,
+
+  // InventoryCategories
+  useGetInventoryCategoriesQuery,
+  useGetInventoryCategoryByIdQuery,
+  useCreateInventoryCategoryMutation,
+  useUpdateInventoryCategoryMutation,
+  useDeleteInventoryCategoryMutation,
+
+  // InventoryItems
+  useGetInventoryItemsQuery,
+  useGetInventoryItemByIdQuery,
+  useCreateInventoryItemMutation,
+  useUpdateInventoryItemMutation,
+  useDeleteInventoryItemMutation,
+
+  // InventoryLogs
+  useGetInventoryLogsQuery,
+  useCreateInventoryLogMutation,
+
+  // Payments
+  useGetPaymentsQuery,
+  useGetPaymentByIdQuery,
+  useCreatePaymentMutation,
+  useUpdatePaymentMutation,
+  useDeletePaymentMutation,
+
+  // ProfitLoss
+  useGetProfitLossEntriesQuery,
+  useGetProfitLossByIdQuery,
+  useCreateProfitLossMutation,
+  useUpdateProfitLossMutation,
+  useDeleteProfitLossMutation,
 
   // Roles
   useGetRolesQuery,
@@ -174,4 +1135,39 @@ export const {
   useCreateRoleMutation,
   useUpdateRoleMutation,
   useDeleteRoleMutation,
+
+  // SalaryPayments
+  useGetSalaryPaymentsQuery,
+  useGetSalaryPaymentByIdQuery,
+  useCreateSalaryPaymentMutation,
+  useUpdateSalaryPaymentMutation,
+  useDeleteSalaryPaymentMutation,
+
+  // SalaryStructures
+  useGetSalaryStructuresQuery,
+  useGetSalaryStructureByIdQuery,
+  useCreateSalaryStructureMutation,
+  useUpdateSalaryStructureMutation,
+  useDeleteSalaryStructureMutation,
+
+  // Services
+  useGetServicesQuery,
+  useGetServiceByIdQuery,
+  useCreateServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+
+  // Tables
+  useGetTablesQuery,
+  useGetTableByIdQuery,
+  useCreateTableMutation,
+  useUpdateTableMutation,
+  useDeleteTableMutation,
+
+  // Users
+  useGetUsersQuery,
+  useGetUserByIdQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
 } = allSlices;

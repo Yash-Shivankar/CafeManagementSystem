@@ -46,6 +46,14 @@ const DynamicForm = ({ fields, initialValues = {}, onSubmit }) => {
                 </option>
               ))}
             </select>
+          ) : field.type === "file" ? (
+            <input
+              type="file"
+              onChange={(e) =>
+                handleChange(field.name, e.target.files?.[0] || null)
+              }
+              className={inputClass}
+            />
           ) : (
             <input
               type={field.type}

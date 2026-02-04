@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.routes.auth import router as auth_router
 from app.routes.user import router as user_router
 from app.routes.booking import router as booking_router
+from app.routes.common import router as common_router
 from app.routes.customer_feedback import router as customer_feedback_router
 from app.routes.customer_invoice import router as customer_invoice_router
 from app.routes.department import router as department_router
@@ -29,6 +30,7 @@ api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(auth_router)
 api_router.include_router(booking_router)
+api_router.include_router(common_router)
 api_router.include_router(customer_feedback_router)
 api_router.include_router(customer_invoice_router)
 api_router.include_router(department_router)

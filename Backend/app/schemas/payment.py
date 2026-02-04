@@ -1,7 +1,7 @@
 # app/schemas/payment.py
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 from pydantic import BaseModel, Field
 from app.models.Enums import PaymentMethod
 
@@ -29,8 +29,15 @@ class PaymentOut(PaymentBase):
     updated_at: datetime
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: Optional[bool] = False
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedPaymentOut(BaseModel):
+    data: List[PaymentOut]
+    total: int
+    totalPages: int
+    currentPage: int

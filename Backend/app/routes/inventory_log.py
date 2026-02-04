@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
@@ -8,8 +8,10 @@ from app.schemas.inventory_log import (
     InventoryLogCreate,
     InventoryLogOut,
     InventoryLogUpdate,
+    PaginatedInventoryLogOut,
 )
 from app.models.InventoryLogs import InventoryLog
+from math import ceil
 
 inventory_log_crud = CRUDBase[InventoryLog, InventoryLogCreate, InventoryLogUpdate](
     InventoryLog
@@ -33,14 +35,33 @@ def add_inventory_log(
     )
 
 
-@router.get("/", response_model=List[InventoryLogOut])
+# @router.get("/", response_model=List[InventoryLogOut])
+# def list_inventory_logs(
+#     item_id: int | None = None,
+#     db: Session = Depends(get_db),
+# ):
+#     query = db.query(InventoryLog).filter(InventoryLog.is_deleted == False)
+
+#     if item_id:
+#         query = query.filter(InventoryLog.item_id == item_id)
+
+#     return query.order_by(InventoryLog.changed_on.desc()).all()
+
+
+@router.get("/", response_model=PaginatedInventoryLogOut)
 def list_inventory_logs(
-    item_id: int | None = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    query = db.query(InventoryLog).filter(InventoryLog.is_deleted == False)
-
-    if item_id:
-        query = query.filter(InventoryLog.item_id == item_id)
-
-    return query.order_by(InventoryLog.changed_on.desc()).all()
+    skip = (page - 1) * limit
+    inventory_logs, total = inventory_log_crud.get_multi_paginated(
+        db, skip=skip, limit=limit
+    )
+    total_pages = ceil(total / limit)
+    return {
+        "data": inventory_logs,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }

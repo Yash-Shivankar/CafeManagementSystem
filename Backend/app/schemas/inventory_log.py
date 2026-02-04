@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from app.models.Enums import InventoryChangeType
@@ -32,3 +32,10 @@ class InventoryLogOut(InventoryLogBase):
 
     class Config:
         from_attributes = True
+
+
+class PaginatedInventoryLogOut(BaseModel):
+    data: List[InventoryLogOut]
+    total: int
+    totalPages: int
+    currentPage: int

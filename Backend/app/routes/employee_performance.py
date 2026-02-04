@@ -1,5 +1,5 @@
 # app/api/employee_performance.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
@@ -8,11 +8,13 @@ from app.schemas.employee_performance import (
     EmployeePerformanceCreate,
     EmployeePerformanceUpdate,
     EmployeePerformanceOut,
+    PaginatedEmployeePerformanceOut,
 )
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
-router = APIRouter(prefix="/employee-performance", tags=["EmployeePerformances"])
+router = APIRouter(prefix="/employee-performances", tags=["EmployeePerformances"])
 performance_crud = CRUDBase[
     EmployeePerformance, EmployeePerformanceCreate, EmployeePerformanceUpdate
 ](EmployeePerformance)
@@ -32,9 +34,28 @@ def get_performance(performance_id: int, db: Session = Depends(get_db)):
     return performance_crud.get(db, performance_id)
 
 
-@router.get("/", response_model=List[EmployeePerformanceOut])
-def list_performances(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return performance_crud.get_multi(db, skip=skip, limit=limit)
+# @router.get("/", response_model=List[EmployeePerformanceOut])
+# def list_performances(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return performance_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedEmployeePerformanceOut)
+def list_performances(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    skip = (page - 1) * limit
+    performances, total = performance_crud.get_multi_paginated(
+        db, skip=skip, limit=limit
+    )
+    total_pages = ceil(total / limit)
+    return {
+        "data": performances,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{performance_id}", response_model=EmployeePerformanceOut)

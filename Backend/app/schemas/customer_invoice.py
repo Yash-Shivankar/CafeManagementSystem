@@ -32,9 +32,16 @@ class CustomerInvoiceOut(CustomerInvoiceBase):
     updated_at: datetime
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: Optional[bool] = False
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
     payments: Optional[List[PaymentOut]] = []
 
     class Config:
         from_attributes = True
+
+
+class PaginatedCustomerInvoiceOut(BaseModel):
+    data: List[CustomerInvoiceOut]
+    total: int
+    totalPages: int
+    currentPage: int

@@ -1,12 +1,18 @@
 # app/api/bookings.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.Booking import Booking
-from app.schemas.booking import BookingCreate, BookingUpdate, BookingOut
+from app.schemas.booking import (
+    BookingCreate,
+    BookingUpdate,
+    BookingOut,
+    PaginatedBookingOut,
+)
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 booking_crud = CRUDBase[Booking, BookingCreate, BookingUpdate](Booking)
@@ -26,9 +32,26 @@ def get_booking(booking_id: int, db: Session = Depends(get_db)):
     return booking_crud.get(db, booking_id)
 
 
-@router.get("/", response_model=List[BookingOut])
-def list_bookings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return booking_crud.get_multi(db, skip=skip, limit=limit)
+# @router.get("/", response_model=List[BookingOut])
+# def list_bookings(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return booking_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedBookingOut)
+def list_bookings(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    skip = (page - 1) * limit
+    bookings, total = booking_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": bookings,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{booking_id}", response_model=BookingOut)

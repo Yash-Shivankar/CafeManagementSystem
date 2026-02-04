@@ -1,12 +1,18 @@
 # app/api/departments.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.Department import Department
-from app.schemas.department import DepartmentCreate, DepartmentUpdate, DepartmentOut
+from app.schemas.department import (
+    DepartmentCreate,
+    DepartmentUpdate,
+    DepartmentOut,
+    PaginatedDepartmentOut,
+)
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/departments", tags=["Deplartments"])
 department_crud = CRUDBase[Department, DepartmentCreate, DepartmentUpdate](Department)
@@ -26,9 +32,26 @@ def get_department(dept_id: int, db: Session = Depends(get_db)):
     return department_crud.get(db, dept_id)
 
 
-@router.get("/", response_model=List[DepartmentOut])
-def list_departments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return department_crud.get_multi(db, skip=skip, limit=limit)
+# @router.get("/", response_model=List[DepartmentOut])
+# def list_departments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return department_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedDepartmentOut)
+def list_departments(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    skip = (page - 1) * limit
+    departments, total = department_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    total_pages = ceil(total / limit)
+    return {
+        "data": departments,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{dept_id}", response_model=DepartmentOut)

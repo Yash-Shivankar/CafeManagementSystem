@@ -18,9 +18,11 @@ class EmployeeDocument(Common):
         ForeignKey("employee_details.id"),
         nullable=False,
     )
-
-    doc_type = Column(String(100), nullable=False)  # Aadhaar, PAN, Resume, etc.
+    filename = Column(String(255))
+    doc_type = Column(String(100), nullable=False)
     doc_url = Column(String(255), nullable=False)
+    original_name = Column(String(255))
+    size = Column(String(100), nullable=False)
 
     employee = relationship(
         "EmployeeDetails",

@@ -1,5 +1,5 @@
 # app/api/employee_document.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
@@ -8,9 +8,11 @@ from app.schemas.employee_document import (
     EmployeeDocumentCreate,
     EmployeeDocumentUpdate,
     EmployeeDocumentOut,
+    PaginatedEmployeeDocumentOut,
 )
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/employee-documents", tags=["EmployeeDocuments"])
 document_crud = CRUDBase[
@@ -32,9 +34,28 @@ def get_document(document_id: int, db: Session = Depends(get_db)):
     return document_crud.get(db, document_id)
 
 
-@router.get("/", response_model=List[EmployeeDocumentOut])
-def list_documents(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return document_crud.get_multi(db, skip=skip, limit=limit)
+# @router.get("/", response_model=List[EmployeeDocumentOut])
+# def list_documents(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return document_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedEmployeeDocumentOut)
+def list_documents(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    skip = (page - 1) * limit
+    documents, total = document_crud.get_multi_paginated(
+        db, skip=skip, limit=limit, relationships=["employee"]
+    )
+    total_pages = ceil(total / limit)
+    return {
+        "data": documents,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{document_id}", response_model=EmployeeDocumentOut)

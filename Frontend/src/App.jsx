@@ -13,7 +13,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AppInitializer from "./components/AppInitializer";
 import Dashboard from "./pages/Dashboard";
 import AppSettings from "./pages/AppSettings";
-import UserTabs from "./pages/UserTabs";
+import UserTabs from "./pages/UserManagement/UserTabs";
+import EmployeeTabs from "./pages/EmployeeManagement/EmployeeTabs";
 import "./index.css";
 
 function App() {
@@ -35,8 +36,9 @@ function App() {
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="users" element={<UserTabs />} />
-            <Route path="settings" element={<AppSettings />} />
+            <Route path="user-management" element={<UserTabs />} />
+            <Route path="employee-management" element={<EmployeeTabs />} />
+            <Route path="app-settings" element={<AppSettings />} />
           </Route>
         </Routes>
       </Router>

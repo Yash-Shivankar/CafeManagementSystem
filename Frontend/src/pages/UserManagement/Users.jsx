@@ -1,8 +1,8 @@
 import { useState } from "react";
-import DataTable from "../components/DataTable";
-import DynamicForm from "../components/DynamicForm";
-import Modal from "../components/Modal";
-import Button from "../components/Button";
+import DataTable from "../../components/DataTable";
+import DynamicForm from "../../components/DynamicForm";
+import Modal from "../../components/Modal";
+import Button from "../../components/Button";
 import { toast } from "react-toastify";
 
 import {
@@ -11,7 +11,7 @@ import {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useGetRolesQuery,
-} from "../app/allSlices";
+} from "../../app/allSlices";
 
 const Users = () => {
   const [page, setPage] = useState(1);

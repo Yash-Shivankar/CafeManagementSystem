@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -8,9 +8,11 @@ from app.schemas.salary_structure import (
     SalaryStructureCreate,
     SalaryStructureUpdate,
     SalaryStructureOut,
+    PaginatedSalaryStructureOut,
 )
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from math import ceil
 
 router = APIRouter(prefix="/salary-structures", tags=["SalaryStructures"])
 
@@ -40,13 +42,32 @@ def get_salary_structure(
     return salary_structure_crud.get(db, salary_structure_id)
 
 
-@router.get("/", response_model=List[SalaryStructureOut])
+# @router.get("/", response_model=List[SalaryStructureOut])
+# def list_salary_structure(
+#     skip: int = 0,
+#     limit: int = 100,
+#     db: Session = Depends(get_db),
+# ):
+#     return salary_structure_crud.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/", response_model=PaginatedSalaryStructureOut)
 def list_salary_structure(
-    skip: int = 0,
-    limit: int = 100,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    return salary_structure_crud.get_multi(db, skip=skip, limit=limit)
+    skip = (page - 1) * limit
+    salary_structures, total = salary_structure_crud.get_multi_paginated(
+        db, skip=skip, limit=limit
+    )
+    total_pages = ceil(total / limit)
+    return {
+        "data": salary_structures,
+        "total": total,
+        "totalPages": total_pages,
+        "currentPage": page,
+    }
 
 
 @router.put("/{salary_structure_id}", response_model=SalaryStructureOut)

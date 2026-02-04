@@ -1,6 +1,6 @@
 # app/schemas/department.py
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -22,8 +22,15 @@ class DepartmentOut(DepartmentBase):
     updated_at: datetime
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: Optional[bool] = False
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedDepartmentOut(BaseModel):
+    data: List[DepartmentOut]
+    total: int
+    totalPages: int
+    currentPage: int

@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import Optional, List
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
@@ -39,3 +39,10 @@ class ProfitLossOut(ProfitLossBase):
 
     class Config:
         from_attributes = True
+
+
+class PaginatedProfitLossOut(BaseModel):
+    data: List[ProfitLossOut]
+    total: int
+    totalPages: int
+    currentPage: int

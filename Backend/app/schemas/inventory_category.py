@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
@@ -23,8 +23,15 @@ class InventoryCategoryOut(InventoryCategoryBase):
     updated_at: datetime
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    deleted_at: Optional[datetime] = None
-    is_deleted: bool
+    # deleted_at: Optional[datetime] = None
+    # is_deleted: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+
+class PaginatedInventoryCategoryOut(BaseModel):
+    data: List[InventoryCategoryOut]
+    total: int
+    totalPages: int
+    currentPage: int
