@@ -69,7 +69,9 @@ def list_inventory_items(
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
-    inventory_items, total = item_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    inventory_items, total = item_crud.get_multi_paginated(
+        db, skip=skip, limit=limit, relationships=["category"]
+    )
     total_pages = ceil(total / limit)
     return {
         "data": inventory_items,

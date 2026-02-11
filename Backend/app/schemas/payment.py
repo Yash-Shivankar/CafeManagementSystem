@@ -4,6 +4,7 @@ from decimal import Decimal
 from typing import Optional, Annotated, List
 from pydantic import BaseModel, Field
 from app.models.Enums import PaymentMethod
+from app.schemas.customer_invoice import CustomerInvoiceOut
 
 
 class PaymentBase(BaseModel):
@@ -23,8 +24,12 @@ class PaymentUpdate(BaseModel):
     payment_date: Optional[datetime] = None
 
 
-class PaymentOut(PaymentBase):
+class PaymentOut(BaseModel):
     id: int
+    invoice: Optional[CustomerInvoiceOut]
+    amount: Decimal
+    method: PaymentMethod
+    payment_date: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
     created_by: Optional[int] = None

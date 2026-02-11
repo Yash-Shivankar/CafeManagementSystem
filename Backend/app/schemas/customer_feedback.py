@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import Optional, Annotated, List
 from pydantic import BaseModel, Field
+from app.schemas.user import UserOut
 
 
 class CustomerFeedbackBase(BaseModel):
@@ -21,8 +22,12 @@ class CustomerFeedbackUpdate(BaseModel):
     date_given: Optional[datetime] = None
 
 
-class CustomerFeedbackOut(CustomerFeedbackBase):
+class CustomerFeedbackOut(BaseModel):
     id: int
+    user: Optional[UserOut]
+    rating: Annotated[int, Field(ge=1, le=5)]
+    feedback: Optional[str] = None
+    date_given: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
     created_by: Optional[int] = None

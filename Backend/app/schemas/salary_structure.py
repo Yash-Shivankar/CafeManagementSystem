@@ -3,6 +3,7 @@ from typing import Optional, List
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
+from app.schemas.employee_details import EmployeeDetailsOut
 
 
 class SalaryStructureBase(BaseModel):
@@ -39,7 +40,7 @@ class SalaryStructureUpdate(BaseModel):
 
 class SalaryStructureOut(SalaryStructureBase):
     id: int
-
+    employee: Optional[EmployeeDetailsOut]
     created_at: datetime
     updated_at: datetime
     created_by: Optional[int] = None

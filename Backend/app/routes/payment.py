@@ -44,7 +44,9 @@ def list_payments(
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
-    payments, total = payment_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    payments, total = payment_crud.get_multi_paginated(
+        db, skip=skip, limit=limit, relationships=["invoice"]
+    )
     total_pages = ceil(total / limit)
     return {
         "data": payments,

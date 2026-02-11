@@ -22,17 +22,22 @@ const DataTable = ({
   const { currentPage = 1, totalPages = 1 } = pagination;
 
   return (
-    <div className="overflow-x-auto rounded-md border border-border bg-background">
-      <table className="w-full border-collapse text-sm text-foreground">
+    <div className="overflow-x-hidden rounded-md border border-border bg-background">
+      <table className="w-full table-fixed border-collapse text-sm text-foreground">
         <thead className="bg-muted">
           <tr>
             {tableColumns.map((col) => (
               <th
                 key={col.key}
                 className="
-                  px-4 py-2 text-left font-medium
+                  px-4 py-3
+                  text-left
+                  font-semibold text-sm
+                  tracking-wide
                   border-b border-border
-                  text-muted-foreground
+                  text-foreground
+                  bg-muted
+                  uppercase
                 "
               >
                 {col.label}
@@ -41,9 +46,14 @@ const DataTable = ({
 
             <th
               className="
-                px-4 py-2 text-center font-medium
+                px-4 py-3
+                text-center
+                font-semibold text-sm
+                tracking-wide
                 border-b border-border
-                text-muted-foreground
+                text-foreground
+                bg-muted
+                uppercase
               "
             >
               Actions
@@ -61,21 +71,34 @@ const DataTable = ({
               "
             >
               {tableColumns.map((col) => (
+                // <td
+                //   key={col.key}
+                //   className="
+                //     px-4 py-2
+                //     border-b border-border
+                //     text-foreground
+                //     break-words whitespace-normal
+                //     truncate max-w-[220px]
+                //   "
+                // >
+                //   {col.render ? col.render(row[col.key], row) : row[col.key]}
+                // </td>
                 <td
                   key={col.key}
-                  className="
-                    px-4 py-2
-                    border-b border-border
-                    text-foreground
-                  "
+                  className="px-4 py-2 border-b border-border max-w-[220px]"
                 >
-                  {col.render ? col.render(row[col.key], row) : row[col.key]}
+                  <div
+                    className="truncate"
+                    title={col.render ? undefined : row[col.key]}
+                  >
+                    {col.render ? col.render(row[col.key], row) : row[col.key]}
+                  </div>
                 </td>
               ))}
 
               {/* ACTIONS */}
               <td className="px-4 py-2 border-b border-border">
-                <div className="flex justify-center gap-2">
+                <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                   <Button
                     label="Edit"
                     size="sm"

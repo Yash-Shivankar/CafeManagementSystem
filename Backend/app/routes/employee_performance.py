@@ -47,7 +47,7 @@ def list_performances(
 ):
     skip = (page - 1) * limit
     performances, total = performance_crud.get_multi_paginated(
-        db, skip=skip, limit=limit
+        db, skip=skip, limit=limit, relationships=["employee"]
     )
     total_pages = ceil(total / limit)
     return {

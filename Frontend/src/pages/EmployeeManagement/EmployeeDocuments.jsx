@@ -4,6 +4,7 @@ import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import { toast } from "react-toastify";
+import { BaseUrl } from "../../config/config";
 
 import {
   useGetEmployeeDocumentsQuery,
@@ -18,6 +19,8 @@ const EmployeeDocuments = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingDocument, setEditingDocument] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState(null);
 
   const limit = 10;
 
@@ -50,7 +53,27 @@ const EmployeeDocuments = () => {
       key: "size",
       label: "Size",
     },
-    // { key: "doc_url", label: "Document Path" },
+    {
+      key: "doc_url",
+      label: "Document",
+      render: (url, row) => {
+        if (!url) return "-";
+
+        const fullUrl = `${BaseUrl}${url}`;
+        const ext = row.original_name?.split(".").pop()?.toLowerCase();
+
+        return (
+          <Button
+            size="sm"
+            label="Preview"
+            onClick={() => {
+              setPreviewUrl(fullUrl);
+              setPreviewType(ext);
+            }}
+          />
+        );
+      },
+    },
   ];
 
   const documentsFormFields = [
@@ -179,9 +202,56 @@ const EmployeeDocuments = () => {
         >
           <DynamicForm
             fields={documentsFormFields}
-            initialValues={editingDocument ? editingDocument : {}}
+            initialValues={
+              editingDocument
+                ? {
+                    ...editingDocument,
+                    employee_id: editingDocument.employee?.id,
+                  }
+                : {}
+            }
             onSubmit={handleSubmit}
           />
+        </Modal>
+      )}
+
+      {previewUrl && (
+        <Modal
+          title="Document Preview"
+          onClose={() => {
+            setPreviewUrl(null);
+            setPreviewType(null);
+          }}
+        >
+          {/* PDF */}
+          {previewType === "pdf" && (
+            <iframe src={previewUrl} className="w-full h-[80vh] border" />
+          )}
+
+          {/* Images */}
+          {["jpg", "jpeg", "png", "webp"].includes(previewType) && (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              className="max-h-[80vh] mx-auto"
+            />
+          )}
+
+          {/* Fallback */}
+          {!["pdf", "jpg", "jpeg", "png", "webp"].includes(previewType) && (
+            <div className="text-center text-muted-foreground">
+              Preview not supported for this file type
+              <div className="mt-2">
+                <a
+                  href={previewUrl}
+                  className="underline text-blue-600"
+                  download
+                >
+                  Download instead
+                </a>
+              </div>
+            </div>
+          )}
         </Modal>
       )}
     </div>

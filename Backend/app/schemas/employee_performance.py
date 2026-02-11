@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import Optional, Annotated, List
 from pydantic import BaseModel, Field
+from app.schemas.employee_details import EmployeeDetailsOut
 
 
 class EmployeePerformanceBase(BaseModel):
@@ -19,8 +20,11 @@ class EmployeePerformanceUpdate(BaseModel):
     feedback: Optional[str] = None
 
 
-class EmployeePerformanceOut(EmployeePerformanceBase):
+class EmployeePerformanceOut(BaseModel):
     id: int
+    employee: Optional[EmployeeDetailsOut]
+    rating: Annotated[int, Field(ge=1, le=5)]
+    feedback: Optional[str] = None
     review_date: datetime
     created_at: datetime
     updated_at: datetime

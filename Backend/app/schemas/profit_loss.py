@@ -1,8 +1,7 @@
 import datetime
 from typing import Optional, List
 from decimal import Decimal
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ProfitLossBase(BaseModel):
@@ -10,13 +9,17 @@ class ProfitLossBase(BaseModel):
 
     revenue: Decimal = Field(..., ge=0, example=250000.00)
     expenses: Decimal = Field(..., ge=0, example=180000.00)
-    profit: Decimal = Field(..., example=70000.00)
 
 
 class ProfitLossCreate(ProfitLossBase):
     """Schema for creating profit/loss entry"""
 
-    pass
+    profit: Decimal | None = None
+
+    @model_validator(mode="after")
+    def calculate_profit(self):
+        self.profit = self.revenue - self.expenses
+        return self
 
 
 class ProfitLossUpdate(BaseModel):
@@ -29,7 +32,7 @@ class ProfitLossUpdate(BaseModel):
 
 class ProfitLossOut(ProfitLossBase):
     id: int
-
+    profit: Optional[Decimal]
     created_at: datetime.datetime
     updated_at: datetime.datetime
     created_by: Optional[int] = None

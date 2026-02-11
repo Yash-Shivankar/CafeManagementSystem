@@ -3,6 +3,7 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 from decimal import Decimal
+from app.schemas.inventory_category import InventoryCategoryOut
 
 
 class InventoryItemBase(BaseModel):
@@ -33,7 +34,12 @@ class InventoryItemUpdate(BaseModel):
 
 class InventoryItemOut(InventoryItemBase):
     id: int
-
+    name: str = Field(..., min_length=2, max_length=100)
+    category: Optional[InventoryCategoryOut]
+    quantity: int = Field(default=0, ge=0)
+    min_quantity: int = Field(default=0, ge=0)
+    cost_price: Decimal = Field(..., gt=0)
+    selling_price: Decimal = Field(..., gt=0)
     created_at: datetime
     updated_at: datetime
     created_by: Optional[int]

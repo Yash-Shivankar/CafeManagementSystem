@@ -2,7 +2,8 @@ from datetime import datetime
 from typing import Optional, List
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
+from app.schemas.employee_details import EmployeeDetailsOut
 
 
 class SalaryPaymentBase(BaseModel):
@@ -19,6 +20,11 @@ class SalaryPaymentBase(BaseModel):
 
     paid_on: Optional[datetime] = None
 
+    @model_validator(mode="after")
+    def calculate_net_salary(self):
+        self.net_salary = self.gross_salary - self.pf_deducted - self.esi_deducted
+        return self
+
 
 class SalaryPaymentCreate(SalaryPaymentBase):
     """Schema for creating salary payment"""
@@ -30,7 +36,7 @@ class SalaryPaymentUpdate(BaseModel):
     """Schema for updating salary payment (partial update allowed)"""
 
     gross_salary: Optional[Decimal] = Field(None, gt=0)
-    net_salary: Optional[Decimal] = Field(None, gt=0)
+    # net_salary: Optional[Decimal] = Field(None, gt=0)
 
     pf_deducted: Optional[Decimal] = Field(None, ge=0)
     esi_deducted: Optional[Decimal] = Field(None, ge=0)
@@ -40,7 +46,14 @@ class SalaryPaymentUpdate(BaseModel):
 
 class SalaryPaymentOut(SalaryPaymentBase):
     id: int
-
+    employee: Optional[EmployeeDetailsOut]
+    month: str = Field(..., example="January")
+    year: int = Field(..., ge=2000, le=2100, example=2025)
+    gross_salary: Decimal = Field(..., gt=0, example=50000)
+    net_salary: Decimal = Field(..., gt=0, example=45000)
+    pf_deducted: Decimal = Field(default=0, ge=0, example=1800)
+    esi_deducted: Decimal = Field(default=0, ge=0, example=375)
+    paid_on: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
     created_by: Optional[int] = None

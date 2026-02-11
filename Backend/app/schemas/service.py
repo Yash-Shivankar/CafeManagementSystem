@@ -23,9 +23,10 @@ class ServiceUpdate(BaseModel):
     price: Optional[Decimal] = Field(None, gt=0)
 
 
-class ServiceOut(ServiceBase):
+class ServiceOut(BaseModel):
     id: int
-
+    name: str
+    price: Decimal = Field(ge=0)
     created_at: datetime
     updated_at: datetime
     created_by: Optional[int] = None

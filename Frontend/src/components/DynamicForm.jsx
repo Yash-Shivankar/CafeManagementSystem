@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "../components/Button";
+import StarInput from "../components/StarInput";
 
 const DynamicForm = ({ fields, initialValues = {}, onSubmit }) => {
   const [form, setForm] = React.useState(initialValues);
@@ -46,6 +47,12 @@ const DynamicForm = ({ fields, initialValues = {}, onSubmit }) => {
                 </option>
               ))}
             </select>
+          ) : field.type === "stars" ? (
+            <StarInput
+              value={form[field.name] ?? 0}
+              max={field.max || 5}
+              onChange={(val) => handleChange(field.name, val)}
+            />
           ) : field.type === "file" ? (
             <input
               type="file"

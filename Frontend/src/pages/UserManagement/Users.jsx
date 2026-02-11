@@ -31,8 +31,12 @@ const Users = () => {
 
   const columns = [
     { key: "id", label: "Id" },
-    { key: "first_name", label: "First Name" },
-    { key: "last_name", label: "Last Name" },
+    {
+      key: "user",
+      label: "User",
+      render: (_, row) =>
+        [row.first_name, row.last_name].filter(Boolean).join(" ") || "-",
+    },
     { key: "email", label: "Email" },
     { key: "mobile_number", label: "Mobile Number" },
     {

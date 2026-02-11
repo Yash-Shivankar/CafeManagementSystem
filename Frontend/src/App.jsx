@@ -15,6 +15,11 @@ import Dashboard from "./pages/Dashboard";
 import AppSettings from "./pages/AppSettings";
 import UserTabs from "./pages/UserManagement/UserTabs";
 import EmployeeTabs from "./pages/EmployeeManagement/EmployeeTabs";
+import CustomerTabs from "./pages/CustomerManagement/CustomerTabs";
+import EmployeePaymentTabs from "./pages/EmployeePaymentManagement/EmployeePaymentTabs";
+import PaymentTabs from "./pages/PaymentManagement/PaymentTabs";
+import InventoryTabs from "./pages/InventoryManagement/InventoryTabs";
+import ActivityLogs from "./pages/ActivityLogManagement/ActivityLogs";
 import "./index.css";
 
 function App() {
@@ -38,7 +43,15 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="user-management" element={<UserTabs />} />
             <Route path="employee-management" element={<EmployeeTabs />} />
+            <Route path="customer-management" element={<CustomerTabs />} />
+            <Route path="inventory-management" element={<InventoryTabs />} />
+            <Route path="payment-management" element={<PaymentTabs />} />
+            <Route
+              path="employee-payment-management"
+              element={<EmployeePaymentTabs />}
+            />
             <Route path="app-settings" element={<AppSettings />} />
+            <Route path="activity-log-management" element={<ActivityLogs />} />
           </Route>
         </Routes>
       </Router>

@@ -7,7 +7,7 @@ import EmployeeDocuments from "./EmployeeDocuments";
 import EmployeePerformances from "./EmployeePerformances";
 
 const tabs = [
-  { key: "details", label: "Employee Details", component: EmployeeDetails },
+  { key: "details", label: "Details", component: EmployeeDetails },
   { key: "attendance", label: "Attendance", component: EmployeeAttendances },
   { key: "documents", label: "Documents", component: EmployeeDocuments },
   { key: "performance", label: "Performance", component: EmployeePerformances },
@@ -15,7 +15,7 @@ const tabs = [
   { key: "departments", label: "Departments", component: Departments },
 ];
 
-const MasterDataTabs = () => {
+const EmployeeTabs = () => {
   const [activeTab, setActiveTab] = useState("details");
 
   const ActiveComponent = tabs.find((tab) => tab.key === activeTab)?.component;
@@ -43,4 +43,4 @@ const MasterDataTabs = () => {
   );
 };
 
-export default MasterDataTabs;
+export default EmployeeTabs;

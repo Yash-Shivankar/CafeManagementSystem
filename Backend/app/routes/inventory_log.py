@@ -56,7 +56,7 @@ def list_inventory_logs(
 ):
     skip = (page - 1) * limit
     inventory_logs, total = inventory_log_crud.get_multi_paginated(
-        db, skip=skip, limit=limit
+        db, skip=skip, limit=limit, relationships=["item"]
     )
     total_pages = ceil(total / limit)
     return {

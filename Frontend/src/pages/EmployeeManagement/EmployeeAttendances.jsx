@@ -169,6 +169,7 @@ const EmployeeAttendances = () => {
 
     return {
       ...attendance,
+      employee_id: attendance.employee?.id,
       check_in: extractTime(attendance.check_in),
       check_out: extractTime(attendance.check_out),
     };

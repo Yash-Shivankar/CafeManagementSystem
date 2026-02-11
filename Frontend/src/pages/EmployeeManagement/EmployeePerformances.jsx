@@ -4,50 +4,50 @@ import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import { toast } from "react-toastify";
+import StarDisplay from "../../components/StarDisplay";
 
 import {
   useGetEmployeePerformancesQuery,
-  useGetEmployeePerformanceByIdQuery,
   useCreateEmployeePerformanceMutation,
   useUpdateEmployeePerformanceMutation,
   useDeleteEmployeePerformanceMutation,
-  useGetUsersQuery,
-  useGetDesignationsQuery,
-  useGetDepartmentsQuery,
+  useGetEmployeeDetailsQuery,
 } from "../../app/allSlices";
 
 const EmployeePerformances = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
-  const [editingDetail, setEditingDetail] = useState(null);
+  const [editingPerformance, setEditingPerformance] = useState(null);
 
   const limit = 10;
 
-  const { data, isLoading, refetch } = useGetEmployeeDetailsQuery({
+  const { data, isLoading, refetch } = useGetEmployeePerformancesQuery({
     page,
     limit,
   });
-  const { data: usersData } = useGetUsersQuery();
-  const { data: DesignationsData } = useGetDesignationsQuery();
-  const { data: DepartmentsData } = useGetDepartmentsQuery();
+  const { data: detailsData } = useGetEmployeeDetailsQuery();
 
-  const [createDetail] = useCreateEmployeeDetailMutation();
-  const [updateDetail] = useUpdateEmployeeDetailMutation();
-  const [deleteDetail] = useDeleteEmployeeDetailMutation();
+  const [createPerformance] = useCreateEmployeePerformanceMutation();
+  const [updatePerformance] = useUpdateEmployeePerformanceMutation();
+  const [deletePerformance] = useDeleteEmployeePerformanceMutation();
 
   const columns = [
     { key: "id", label: "Id" },
     {
-      key: "user",
-      label: "User",
-      render: (user) =>
-        `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim(),
+      key: "employee",
+      label: "Employee Name",
+      render: (employee) =>
+        `${employee?.user?.first_name ?? ""} ${employee?.user?.last_name ?? ""}`.trim(),
     },
-    { key: "employee_code", label: "Employee Code" },
-    { key: "employment_type", label: "Employment Type" },
     {
-      key: "joining_date",
-      label: "Joining Date",
+      key: "rating",
+      label: "Rating",
+      render: (rating) => <StarDisplay value={rating} />,
+    },
+    { key: "feedback", label: "Feedback" },
+    {
+      key: "review_date",
+      label: "Review Date",
       render: (value) => {
         const date = new Date(value);
         return date.toLocaleDateString("en-GB", {
@@ -57,95 +57,50 @@ const EmployeePerformances = () => {
         });
       },
     },
-    { key: "status", label: "Status" },
-    {
-      key: "department",
-      label: "Department",
-      render: (dept) => dept?.department_name ?? "-",
-    },
-    {
-      key: "designation",
-      label: "Designation",
-      render: (desg) => desg?.designation_name ?? "-",
-    },
   ];
 
-  const detailsFormFields = [
+  const performancesFormFields = [
     {
-      name: "user_id",
-      label: "User",
+      name: "employee_id",
+      label: "Employee",
       type: "select",
       options:
-        usersData?.data?.map((u) => ({
-          label: `${u.first_name} ${u.last_name}`.trim(),
+        detailsData?.data?.map((u) => ({
+          label:
+            `${u?.user?.first_name || ""} ${u?.user?.last_name || ""}`.trim(),
           value: u.id,
         })) || [],
     },
-    { name: "employee_code", label: "Employee Code", type: "text" },
     {
-      name: "joining_date",
-      label: "Joining Date",
+      name: "rating",
+      label: "Rating",
+      type: "stars",
+      max: 5,
+      required: true,
+    },
+    { name: "feedback", label: "Feedback", type: "text" },
+    {
+      name: "review_date",
+      label: "Review Date",
       type: "date",
-    },
-    {
-      name: "employment_type",
-      label: "Employment Type",
-      type: "select",
-      options: [
-        { label: "Full Time", value: "full-time" },
-        { label: "Part Time", value: "part-time" },
-        { label: "Contract", value: "contract" },
-        { label: "Intern", value: "intern" },
-      ],
-    },
-    {
-      name: "status",
-      label: "Status",
-      type: "select",
-      options: [
-        { label: "Active", value: "active" },
-        { label: "Inactive", value: "inactive" },
-        { label: "Resigned", value: "resigned" },
-        { label: "Terminated", value: "terminated" },
-      ],
-    },
-    {
-      name: "department_id",
-      label: "Departments",
-      type: "select",
-      options:
-        DepartmentsData?.data?.map((dept) => ({
-          label: dept.department_name,
-          value: dept.id,
-        })) || [],
-    },
-    {
-      name: "designation_id",
-      label: "Designations",
-      type: "select",
-      options:
-        DesignationsData?.data?.map((desg) => ({
-          label: desg.designation_name,
-          value: desg.id,
-        })) || [],
     },
   ];
 
   const handleSubmit = async (formData) => {
     try {
-      if (editingDetail) {
-        await updateDetail({
-          id: editingDetail.id,
+      if (editingPerformance) {
+        await updatePerformance({
           ...formData,
+          id: editingPerformance.id,
         }).unwrap();
-        toast.success("Employee Details updated successfully");
+        toast.success("Employee Performances updated successfully");
       } else {
-        await createDetail(formData).unwrap();
-        toast.success("Employee Details created successfully");
+        await createPerformance(formData).unwrap();
+        toast.success("Employee Performances created successfully");
       }
       refetch();
       setShowForm(false);
-      setEditingDetail(null);
+      setEditingPerformance(null);
     } catch (e) {
       const errorMsg = e?.data?.detail || "Something went wrong";
       toast.error(errorMsg);
@@ -154,13 +109,15 @@ const EmployeePerformances = () => {
 
   const handleDelete = async (row) => {
     if (
-      !window.confirm("Are you sure you want to delete this employee details?")
+      !window.confirm(
+        "Are you sure you want to delete this employee performances?",
+      )
     )
       return;
 
     try {
-      await deleteDetail(row.id).unwrap();
-      toast.success("Employee Details deleted successfully");
+      await deletePerformance(row.id).unwrap();
+      toast.success("Employee Performances deleted successfully");
       refetch();
     } catch (e) {
       const errorMsg = e?.data?.detail || "Something went wrong";
@@ -171,9 +128,9 @@ const EmployeePerformances = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Employee Details</h1>
+        <h1 className="text-2xl font-bold">Employee Performances</h1>
         <Button
-          label="Add Employee Details"
+          label="Add Employee Performances"
           onClick={() => setShowForm(true)}
         />
       </div>
@@ -183,7 +140,7 @@ const EmployeePerformances = () => {
         data={data?.data || []}
         columns={columns}
         onEdit={(row) => {
-          setEditingDetail(row);
+          setEditingPerformance(row);
           setShowForm(true);
         }}
         onDelete={handleDelete}
@@ -197,16 +154,28 @@ const EmployeePerformances = () => {
       {showForm && (
         <Modal
           title={
-            editingDetail ? "Edit Employee Details" : "Create Employee Details"
+            editingPerformance
+              ? "Edit Employee Performances"
+              : "Create Employee Performances"
           }
           onClose={() => {
             setShowForm(false);
-            setEditingDetail(null);
+            setEditingPerformance(null);
           }}
         >
           <DynamicForm
-            fields={detailsFormFields}
-            initialValues={editingDetail ? editingDetail : {}}
+            fields={performancesFormFields}
+            initialValues={
+              editingPerformance
+                ? {
+                    ...editingPerformance,
+                    employee_id: editingPerformance.employee?.id,
+                    review_date: editingPerformance.review_date
+                      ? editingPerformance.review_date.split("T")[0]
+                      : "",
+                  }
+                : {}
+            }
             onSubmit={handleSubmit}
           />
         </Modal>

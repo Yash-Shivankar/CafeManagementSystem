@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { authService } from "../services/auth";
+import { BaseUrl } from "../config/config";
 
 export const allSlices = createApi({
   reducerPath: "allSlices",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BACKEND_URL,
+    baseUrl: BaseUrl,
     prepareHeaders: (headers) => {
       const token = authService.getToken();
 
@@ -19,7 +20,7 @@ export const allSlices = createApi({
     // Login
     login: builder.mutation({
       query: (payload) => ({
-        url: "/auth/login/",
+        url: "/api/v1/auth/login/",
         method: "POST",
         body: payload,
       }),
@@ -28,7 +29,7 @@ export const allSlices = createApi({
     // ApplicationSettings
     getSettings: builder.query({
       query: (params = {}) => ({
-        url: "/settings/",
+        url: "/api/v1/settings/",
         method: "GET",
         params,
       }),
@@ -36,14 +37,14 @@ export const allSlices = createApi({
     }),
     getSettingById: builder.query({
       query: (id) => ({
-        url: `/settings/${id}`,
+        url: `/api/v1/settings/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Settings", id }],
     }),
     createSetting: builder.mutation({
       query: (body) => ({
-        url: "/settings/",
+        url: "/api/v1/settings/",
         method: "POST",
         body,
       }),
@@ -51,7 +52,7 @@ export const allSlices = createApi({
     }),
     updateSetting: builder.mutation({
       query: ({ key, value }) => ({
-        url: `/settings/${key}`,
+        url: `/api/v1/settings/${key}`,
         method: "PUT",
         body: { value },
       }),
@@ -62,7 +63,7 @@ export const allSlices = createApi({
     }),
     deleteSetting: builder.mutation({
       query: (id) => ({
-        url: `/settings/${id}`,
+        url: `/api/v1/settings/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Settings"],
@@ -71,7 +72,7 @@ export const allSlices = createApi({
     // Bookings
     getBookings: builder.query({
       query: (params = {}) => ({
-        url: "/bookings/",
+        url: "/api/v1/bookings/",
         method: "GET",
         params,
       }),
@@ -79,14 +80,14 @@ export const allSlices = createApi({
     }),
     getBookingById: builder.query({
       query: (id) => ({
-        url: `/bookings/${id}`,
+        url: `/api/v1/bookings/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Bookings", id }],
     }),
     createBooking: builder.mutation({
       query: (body) => ({
-        url: "/bookings/",
+        url: "/api/v1/bookings/",
         method: "POST",
         body,
       }),
@@ -94,7 +95,7 @@ export const allSlices = createApi({
     }),
     updateBooking: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/bookings/${id}`,
+        url: `/api/v1/bookings/${id}`,
         method: "PUT",
         body,
       }),
@@ -105,7 +106,7 @@ export const allSlices = createApi({
     }),
     deleteBooking: builder.mutation({
       query: (id) => ({
-        url: `/bookings/${id}`,
+        url: `/api/v1/bookings/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Bookings"],
@@ -114,7 +115,7 @@ export const allSlices = createApi({
     // Upload Document
     uploadFile: builder.mutation({
       query: (formData) => ({
-        url: "/common/upload/document/",
+        url: "/api/v1/common/upload/document/",
         method: "POST",
         body: formData,
       }),
@@ -124,7 +125,7 @@ export const allSlices = createApi({
     // CustomerFeedbacks
     getCustomerFeedbacks: builder.query({
       query: (params = {}) => ({
-        url: "/customer-feedbacks/",
+        url: "/api/v1/customer-feedbacks/",
         method: "GET",
         params,
       }),
@@ -132,14 +133,14 @@ export const allSlices = createApi({
     }),
     getCustomerFeedbackById: builder.query({
       query: (id) => ({
-        url: `/customer-feedbacks/${id}`,
+        url: `/api/v1/customer-feedbacks/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "CustomerFeedbacks", id }],
     }),
     createCustomerFeedback: builder.mutation({
       query: (body) => ({
-        url: "/customer-feedbacks/",
+        url: "/api/v1/customer-feedbacks/",
         method: "POST",
         body,
       }),
@@ -147,7 +148,7 @@ export const allSlices = createApi({
     }),
     updateCustomerFeedback: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/customer-feedbacks/${id}`,
+        url: `/api/v1/customer-feedbacks/${id}`,
         method: "PUT",
         body,
       }),
@@ -158,7 +159,7 @@ export const allSlices = createApi({
     }),
     deleteCustomerFeedback: builder.mutation({
       query: (id) => ({
-        url: `/customer-feedbacks/${id}`,
+        url: `/api/v1/customer-feedbacks/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["CustomerFeedbacks"],
@@ -167,7 +168,7 @@ export const allSlices = createApi({
     // CustomerInvoices
     getCustomerInvoices: builder.query({
       query: (params = {}) => ({
-        url: "/customer-invoices/",
+        url: "/api/v1/customer-invoices/",
         method: "GET",
         params,
       }),
@@ -175,14 +176,14 @@ export const allSlices = createApi({
     }),
     getCustomerInvoiceById: builder.query({
       query: (id) => ({
-        url: `/customer-invoices/${id}`,
+        url: `/api/v1/customer-invoices/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "CustomerInvoices", id }],
     }),
     createCustomerInvoice: builder.mutation({
       query: (body) => ({
-        url: "/customer-invoices/",
+        url: "/api/v1/customer-invoices/",
         method: "POST",
         body,
       }),
@@ -190,7 +191,7 @@ export const allSlices = createApi({
     }),
     updateCustomerInvoice: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/customer-invoices/${id}`,
+        url: `/api/v1/customer-invoices/${id}`,
         method: "PUT",
         body,
       }),
@@ -201,7 +202,7 @@ export const allSlices = createApi({
     }),
     deleteCustomerInvoice: builder.mutation({
       query: (id) => ({
-        url: `/customer-invoices/${id}`,
+        url: `/api/v1/customer-invoices/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["CustomerInvoices"],
@@ -210,7 +211,7 @@ export const allSlices = createApi({
     // Departments
     getDepartments: builder.query({
       query: (params = {}) => ({
-        url: "/departments/",
+        url: "/api/v1/departments/",
         method: "GET",
         params,
       }),
@@ -218,14 +219,14 @@ export const allSlices = createApi({
     }),
     getDepartmentById: builder.query({
       query: (id) => ({
-        url: `/departments/${id}`,
+        url: `/api/v1/departments/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Departments", id }],
     }),
     createDepartment: builder.mutation({
       query: (body) => ({
-        url: "/departments/",
+        url: "/api/v1/departments/",
         method: "POST",
         body,
       }),
@@ -233,7 +234,7 @@ export const allSlices = createApi({
     }),
     updateDepartment: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/departments/${id}`,
+        url: `/api/v1/departments/${id}`,
         method: "PUT",
         body,
       }),
@@ -244,7 +245,7 @@ export const allSlices = createApi({
     }),
     deleteDepartment: builder.mutation({
       query: (id) => ({
-        url: `/departments/${id}`,
+        url: `/api/v1/departments/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Departments"],
@@ -253,7 +254,7 @@ export const allSlices = createApi({
     // Designation
     getDesignations: builder.query({
       query: (params = {}) => ({
-        url: "/designations/",
+        url: "/api/v1/designations/",
         method: "GET",
         params,
       }),
@@ -261,14 +262,14 @@ export const allSlices = createApi({
     }),
     getDesignationById: builder.query({
       query: (id) => ({
-        url: `/designations/${id}`,
+        url: `/api/v1/designations/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Designations", id }],
     }),
     createDesignation: builder.mutation({
       query: (body) => ({
-        url: "/designations/",
+        url: "/api/v1/designations/",
         method: "POST",
         body,
       }),
@@ -276,7 +277,7 @@ export const allSlices = createApi({
     }),
     updateDesignation: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/designations/${id}`,
+        url: `/api/v1/designations/${id}`,
         method: "PUT",
         body,
       }),
@@ -287,7 +288,7 @@ export const allSlices = createApi({
     }),
     deleteDesignation: builder.mutation({
       query: (id) => ({
-        url: `/designations/${id}`,
+        url: `/api/v1/designations/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Designations"],
@@ -296,7 +297,7 @@ export const allSlices = createApi({
     // EmployeeAttendances
     getEmployeeAttendances: builder.query({
       query: (params = {}) => ({
-        url: "/employee-attendances/",
+        url: "/api/v1/employee-attendances/",
         method: "GET",
         params,
       }),
@@ -304,7 +305,7 @@ export const allSlices = createApi({
     }),
     getEmployeeAttendanceById: builder.query({
       query: (id) => ({
-        url: `/employee-attendances/${id}`,
+        url: `/api/v1/employee-attendances/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [
@@ -313,7 +314,7 @@ export const allSlices = createApi({
     }),
     createEmployeeAttendance: builder.mutation({
       query: (body) => ({
-        url: "/employee-attendances/",
+        url: "/api/v1/employee-attendances/",
         method: "POST",
         body,
       }),
@@ -321,7 +322,7 @@ export const allSlices = createApi({
     }),
     updateEmployeeAttendance: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/employee-attendances/${id}`,
+        url: `/api/v1/employee-attendances/${id}`,
         method: "PUT",
         body,
       }),
@@ -332,7 +333,7 @@ export const allSlices = createApi({
     }),
     deleteEmployeeAttendance: builder.mutation({
       query: (id) => ({
-        url: `/employee-attendances/${id}`,
+        url: `/api/v1/employee-attendances/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["EmployeeAttendances"],
@@ -341,7 +342,7 @@ export const allSlices = createApi({
     // EmployeeDetails
     getEmployeeDetails: builder.query({
       query: (params = {}) => ({
-        url: "/employee-details/",
+        url: "/api/v1/employee-details/",
         method: "GET",
         params,
       }),
@@ -349,14 +350,14 @@ export const allSlices = createApi({
     }),
     getEmployeeDetailById: builder.query({
       query: (id) => ({
-        url: `/employee-details/${id}`,
+        url: `/api/v1/employee-details/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "EmployeeDetails", id }],
     }),
     createEmployeeDetail: builder.mutation({
       query: (body) => ({
-        url: "/employee-details/",
+        url: "/api/v1/employee-details/",
         method: "POST",
         body,
       }),
@@ -364,7 +365,7 @@ export const allSlices = createApi({
     }),
     updateEmployeeDetail: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/employee-details/${id}`,
+        url: `/api/v1/employee-details/${id}`,
         method: "PUT",
         body,
       }),
@@ -375,7 +376,7 @@ export const allSlices = createApi({
     }),
     deleteEmployeeDetail: builder.mutation({
       query: (id) => ({
-        url: `/employee-details/${id}`,
+        url: `/api/v1/employee-details/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["EmployeeDetails"],
@@ -384,7 +385,7 @@ export const allSlices = createApi({
     // EmployeeDocuments
     getEmployeeDocuments: builder.query({
       query: (params = {}) => ({
-        url: "/employee-documents/",
+        url: "/api/v1/employee-documents/",
         method: "GET",
         params,
       }),
@@ -392,14 +393,14 @@ export const allSlices = createApi({
     }),
     getEmployeeDocumentById: builder.query({
       query: (id) => ({
-        url: `/employee-documents/${id}`,
+        url: `/api/v1/employee-documents/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "EmployeeDocuments", id }],
     }),
     createEmployeeDocument: builder.mutation({
       query: (body) => ({
-        url: "/employee-documents/",
+        url: "/api/v1/employee-documents/",
         method: "POST",
         body,
       }),
@@ -407,7 +408,7 @@ export const allSlices = createApi({
     }),
     updateEmployeeDocument: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/employee-documents/${id}`,
+        url: `/api/v1/employee-documents/${id}`,
         method: "PUT",
         body,
       }),
@@ -418,7 +419,7 @@ export const allSlices = createApi({
     }),
     deleteEmployeeDocument: builder.mutation({
       query: (id) => ({
-        url: `/employee-documents/${id}`,
+        url: `/api/v1/employee-documents/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["EmployeeDocuments"],
@@ -427,7 +428,7 @@ export const allSlices = createApi({
     // EmployeePerformances
     getEmployeePerformances: builder.query({
       query: (params = {}) => ({
-        url: "/employee-performances/",
+        url: "/api/v1/employee-performances/",
         method: "GET",
         params,
       }),
@@ -435,7 +436,7 @@ export const allSlices = createApi({
     }),
     getEmployeePerformanceById: builder.query({
       query: (id) => ({
-        url: `/employee-performances/${id}`,
+        url: `/api/v1/employee-performances/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [
@@ -444,7 +445,7 @@ export const allSlices = createApi({
     }),
     createEmployeePerformance: builder.mutation({
       query: (body) => ({
-        url: "/employee-performances/",
+        url: "/api/v1/employee-performances/",
         method: "POST",
         body,
       }),
@@ -452,7 +453,7 @@ export const allSlices = createApi({
     }),
     updateEmployeePerformance: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/employee-performances/${id}`,
+        url: `/api/v1/employee-performances/${id}`,
         method: "PUT",
         body,
       }),
@@ -463,7 +464,7 @@ export const allSlices = createApi({
     }),
     deleteEmployeePerformance: builder.mutation({
       query: (id) => ({
-        url: `/employee-performances/${id}`,
+        url: `/api/v1/employee-performances/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["EmployeePerformances"],
@@ -472,7 +473,7 @@ export const allSlices = createApi({
     // Incentives
     getIncentives: builder.query({
       query: (params = {}) => ({
-        url: "/incentives/",
+        url: "/api/v1/incentives/",
         method: "GET",
         params,
       }),
@@ -480,14 +481,14 @@ export const allSlices = createApi({
     }),
     getIncentiveById: builder.query({
       query: (id) => ({
-        url: `/incentives/${id}`,
+        url: `/api/v1/incentives/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Incentives", id }],
     }),
     createIncentive: builder.mutation({
       query: (body) => ({
-        url: "/incentives/",
+        url: "/api/v1/incentives/",
         method: "POST",
         body,
       }),
@@ -495,7 +496,7 @@ export const allSlices = createApi({
     }),
     updateIncentive: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/incentives/${id}`,
+        url: `/api/v1/incentives/${id}`,
         method: "PUT",
         body,
       }),
@@ -506,7 +507,7 @@ export const allSlices = createApi({
     }),
     deleteIncentive: builder.mutation({
       query: (id) => ({
-        url: `/incentives/${id}`,
+        url: `/api/v1/incentives/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Incentives"],
@@ -515,7 +516,7 @@ export const allSlices = createApi({
     // IncrementHistories
     getIncrementHistories: builder.query({
       query: (params = {}) => ({
-        url: "/increment-histories/",
+        url: "/api/v1/increment-histories/",
         method: "GET",
         params,
       }),
@@ -523,14 +524,14 @@ export const allSlices = createApi({
     }),
     getIncrementHistoryById: builder.query({
       query: (id) => ({
-        url: `/increment-histories/${id}`,
+        url: `/api/v1/increment-histories/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "IncrementHistories", id }],
     }),
     createIncrementHistory: builder.mutation({
       query: (body) => ({
-        url: "/increment-histories/",
+        url: "/api/v1/increment-histories/",
         method: "POST",
         body,
       }),
@@ -538,7 +539,7 @@ export const allSlices = createApi({
     }),
     updateIncrementHistory: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/increment-histories/${id}`,
+        url: `/api/v1/increment-histories/${id}`,
         method: "PUT",
         body,
       }),
@@ -549,7 +550,7 @@ export const allSlices = createApi({
     }),
     deleteIncrementHistory: builder.mutation({
       query: (id) => ({
-        url: `/increment-histories/${id}`,
+        url: `/api/v1/increment-histories/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["IncrementHistories"],
@@ -558,7 +559,7 @@ export const allSlices = createApi({
     // InventoryCategories
     getInventoryCategories: builder.query({
       query: (params = {}) => ({
-        url: "/inventory-categories/",
+        url: "/api/v1/inventory-categories/",
         method: "GET",
         params,
       }),
@@ -566,7 +567,7 @@ export const allSlices = createApi({
     }),
     getInventoryCategoryById: builder.query({
       query: (id) => ({
-        url: `/inventory-categories/${id}`,
+        url: `/api/v1/inventory-categories/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [
@@ -575,7 +576,7 @@ export const allSlices = createApi({
     }),
     createInventoryCategory: builder.mutation({
       query: (body) => ({
-        url: "/inventory-categories/",
+        url: "/api/v1/inventory-categories/",
         method: "POST",
         body,
       }),
@@ -583,7 +584,7 @@ export const allSlices = createApi({
     }),
     updateInventoryCategory: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/inventory-categories/${id}`,
+        url: `/api/v1/inventory-categories/${id}`,
         method: "PUT",
         body,
       }),
@@ -594,7 +595,7 @@ export const allSlices = createApi({
     }),
     deleteInventoryCategory: builder.mutation({
       query: (id) => ({
-        url: `/inventory-categories/${id}`,
+        url: `/api/v1/inventory-categories/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["InventoryCategories"],
@@ -603,7 +604,7 @@ export const allSlices = createApi({
     // InventoryItems
     getInventoryItems: builder.query({
       query: (params = {}) => ({
-        url: "/inventory-items/",
+        url: "/api/v1/inventory-items/",
         method: "GET",
         params,
       }),
@@ -611,14 +612,14 @@ export const allSlices = createApi({
     }),
     getInventoryItemById: builder.query({
       query: (id) => ({
-        url: `/inventory-items/${id}`,
+        url: `/api/v1/inventory-items/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "InventoryItems", id }],
     }),
     createInventoryItem: builder.mutation({
       query: (body) => ({
-        url: "/inventory-items/",
+        url: "/api/v1/inventory-items/",
         method: "POST",
         body,
       }),
@@ -626,7 +627,7 @@ export const allSlices = createApi({
     }),
     updateInventoryItem: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/inventory-items/${id}`,
+        url: `/api/v1/inventory-items/${id}`,
         method: "PUT",
         body,
       }),
@@ -637,7 +638,7 @@ export const allSlices = createApi({
     }),
     deleteInventoryItem: builder.mutation({
       query: (id) => ({
-        url: `/inventory-items/${id}`,
+        url: `/api/v1/inventory-items/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["InventoryItems"],
@@ -646,7 +647,7 @@ export const allSlices = createApi({
     // InventoryLogs
     getInventoryLogs: builder.query({
       query: (params = {}) => ({
-        url: "/inventory-logs/",
+        url: "/api/v1/inventory-logs/",
         method: "GET",
         params,
       }),
@@ -654,7 +655,7 @@ export const allSlices = createApi({
     }),
     createInventoryLog: builder.mutation({
       query: (body) => ({
-        url: "/inventory-logs/",
+        url: "/api/v1/inventory-logs/",
         method: "POST",
         body,
       }),
@@ -664,7 +665,7 @@ export const allSlices = createApi({
     // Payments
     getPayments: builder.query({
       query: (params = {}) => ({
-        url: "/payments/",
+        url: "/api/v1/payments/",
         method: "GET",
         params,
       }),
@@ -672,14 +673,14 @@ export const allSlices = createApi({
     }),
     getPaymentById: builder.query({
       query: (id) => ({
-        url: `/payments/${id}`,
+        url: `/api/v1/payments/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Payments", id }],
     }),
     createPayment: builder.mutation({
       query: (body) => ({
-        url: "/payments/",
+        url: "/api/v1/payments/",
         method: "POST",
         body,
       }),
@@ -687,7 +688,7 @@ export const allSlices = createApi({
     }),
     updatePayment: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/payments/${id}`,
+        url: `/api/v1/payments/${id}`,
         method: "PUT",
         body,
       }),
@@ -698,59 +699,59 @@ export const allSlices = createApi({
     }),
     deletePayment: builder.mutation({
       query: (id) => ({
-        url: `/payments/${id}`,
+        url: `/api/v1/payments/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Payments"],
     }),
 
     // ProfitLoss
-    getProfitLossEntries: builder.query({
+    getEarnings: builder.query({
       query: (params = {}) => ({
-        url: "/profit-loss/",
+        url: "/api/v1/profit-loss/",
         method: "GET",
         params,
       }),
-      providesTags: ["ProfitLoss"],
+      providesTags: ["Earning"],
     }),
-    getProfitLossById: builder.query({
+    getEarningById: builder.query({
       query: (id) => ({
-        url: `/profit-loss/${id}`,
+        url: `/api/v1/profit-loss/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "ProfitLoss", id }],
+      providesTags: (result, error, id) => [{ type: "Earning", id }],
     }),
-    createProfitLoss: builder.mutation({
+    createEarning: builder.mutation({
       query: (body) => ({
-        url: "/profit-loss/",
+        url: "/api/v1/profit-loss/",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ProfitLoss"],
+      invalidatesTags: ["Earning"],
     }),
-    updateProfitLoss: builder.mutation({
+    updateEarning: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/profit-loss/${id}`,
+        url: `/api/v1/profit-loss/${id}`,
         method: "PUT",
         body,
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: "ProfitLoss", id },
-        "ProfitLoss",
+        { type: "Earning", id },
+        "Earning",
       ],
     }),
-    deleteProfitLoss: builder.mutation({
+    deleteEarning: builder.mutation({
       query: (id) => ({
-        url: `/profit-loss/${id}`,
+        url: `/api/v1/profit-loss/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["ProfitLoss"],
+      invalidatesTags: ["Earning"],
     }),
 
     // Roles
     getRoles: builder.query({
       query: (params = {}) => ({
-        url: "/roles/",
+        url: "/api/v1/roles/",
         method: "GET",
         params,
       }),
@@ -758,14 +759,14 @@ export const allSlices = createApi({
     }),
     getRoleById: builder.query({
       query: (id) => ({
-        url: `/roles/${id}`,
+        url: `/api/v1/roles/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Roles", id }],
     }),
     createRole: builder.mutation({
       query: (body) => ({
-        url: "/roles/",
+        url: "/api/v1/roles/",
         method: "POST",
         body,
       }),
@@ -773,7 +774,7 @@ export const allSlices = createApi({
     }),
     updateRole: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/roles/${id}`,
+        url: `/api/v1/roles/${id}`,
         method: "PUT",
         body,
       }),
@@ -784,7 +785,7 @@ export const allSlices = createApi({
     }),
     deleteRole: builder.mutation({
       query: (id) => ({
-        url: `/roles/${id}`,
+        url: `/api/v1/roles/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Roles"],
@@ -793,7 +794,7 @@ export const allSlices = createApi({
     // SalaryPayments
     getSalaryPayments: builder.query({
       query: (params = {}) => ({
-        url: "/salary-payments/",
+        url: "/api/v1/salary-payments/",
         method: "GET",
         params,
       }),
@@ -801,14 +802,14 @@ export const allSlices = createApi({
     }),
     getSalaryPaymentById: builder.query({
       query: (id) => ({
-        url: `/salary-payments/${id}`,
+        url: `/api/v1/salary-payments/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "SalaryPayments", id }],
     }),
     createSalaryPayment: builder.mutation({
       query: (body) => ({
-        url: "/salary-payments/",
+        url: "/api/v1/salary-payments/",
         method: "POST",
         body,
       }),
@@ -816,7 +817,7 @@ export const allSlices = createApi({
     }),
     updateSalaryPayment: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/salary-payments/${id}`,
+        url: `/api/v1/salary-payments/${id}`,
         method: "PUT",
         body,
       }),
@@ -827,7 +828,7 @@ export const allSlices = createApi({
     }),
     deleteSalaryPayment: builder.mutation({
       query: (id) => ({
-        url: `/salary-payments/${id}`,
+        url: `/api/v1/salary-payments/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["SalaryPayments"],
@@ -836,7 +837,7 @@ export const allSlices = createApi({
     // SalaryStructures
     getSalaryStructures: builder.query({
       query: (params = {}) => ({
-        url: "/salary-structures/",
+        url: "/api/v1/salary-structures/",
         method: "GET",
         params,
       }),
@@ -844,14 +845,14 @@ export const allSlices = createApi({
     }),
     getSalaryStructureById: builder.query({
       query: (id) => ({
-        url: `/salary-structures/${id}`,
+        url: `/api/v1/salary-structures/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "SalaryStructures", id }],
     }),
     createSalaryStructure: builder.mutation({
       query: (body) => ({
-        url: "/salary-structures/",
+        url: "/api/v1/salary-structures/",
         method: "POST",
         body,
       }),
@@ -859,7 +860,7 @@ export const allSlices = createApi({
     }),
     updateSalaryStructure: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/salary-structures/${id}`,
+        url: `/api/v1/salary-structures/${id}`,
         method: "PUT",
         body,
       }),
@@ -870,7 +871,7 @@ export const allSlices = createApi({
     }),
     deleteSalaryStructure: builder.mutation({
       query: (id) => ({
-        url: `/salary-structures/${id}`,
+        url: `/api/v1/salary-structures/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["SalaryStructures"],
@@ -879,7 +880,7 @@ export const allSlices = createApi({
     // Services
     getServices: builder.query({
       query: (params = {}) => ({
-        url: "/services/",
+        url: "/api/v1/services/",
         method: "GET",
         params,
       }),
@@ -887,14 +888,14 @@ export const allSlices = createApi({
     }),
     getServiceById: builder.query({
       query: (id) => ({
-        url: `/services/${id}`,
+        url: `/api/v1/services/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Services", id }],
     }),
     createService: builder.mutation({
       query: (body) => ({
-        url: "/services/",
+        url: "/api/v1/services/",
         method: "POST",
         body,
       }),
@@ -902,7 +903,7 @@ export const allSlices = createApi({
     }),
     updateService: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/services/${id}`,
+        url: `/api/v1/services/${id}`,
         method: "PUT",
         body,
       }),
@@ -913,7 +914,7 @@ export const allSlices = createApi({
     }),
     deleteService: builder.mutation({
       query: (id) => ({
-        url: `/services/${id}`,
+        url: `/api/v1/services/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Services"],
@@ -922,7 +923,7 @@ export const allSlices = createApi({
     // Tables
     getTables: builder.query({
       query: (params = {}) => ({
-        url: "/tables/",
+        url: "/api/v1/tables/",
         method: "GET",
         params,
       }),
@@ -930,14 +931,14 @@ export const allSlices = createApi({
     }),
     getTableById: builder.query({
       query: (id) => ({
-        url: `/tables/${id}`,
+        url: `/api/v1/tables/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Tables", id }],
     }),
     createTable: builder.mutation({
       query: (body) => ({
-        url: "/tables/",
+        url: "/api/v1/tables/",
         method: "POST",
         body,
       }),
@@ -945,7 +946,7 @@ export const allSlices = createApi({
     }),
     updateTable: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/tables/${id}`,
+        url: `/api/v1/tables/${id}`,
         method: "PUT",
         body,
       }),
@@ -956,7 +957,7 @@ export const allSlices = createApi({
     }),
     deleteTable: builder.mutation({
       query: (id) => ({
-        url: `/tables/${id}`,
+        url: `/api/v1/tables/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Tables"],
@@ -965,7 +966,7 @@ export const allSlices = createApi({
     // Users
     getUsers: builder.query({
       query: (params = {}) => ({
-        url: "/users/",
+        url: "/api/v1/users/",
         method: "GET",
         params,
       }),
@@ -973,14 +974,14 @@ export const allSlices = createApi({
     }),
     getUserById: builder.query({
       query: (id) => ({
-        url: `/users/${id}`,
+        url: `/api/v1/users/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "Users", id }],
     }),
     createUser: builder.mutation({
       query: (body) => ({
-        url: "/users/",
+        url: "/api/v1/users/",
         method: "POST",
         body,
       }),
@@ -988,7 +989,7 @@ export const allSlices = createApi({
     }),
     updateUser: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/users/${id}`,
+        url: `/api/v1/users/${id}`,
         method: "PUT",
         body,
       }),
@@ -999,7 +1000,7 @@ export const allSlices = createApi({
     }),
     deleteUser: builder.mutation({
       query: (id) => ({
-        url: `/users/${id}`,
+        url: `/api/v1/users/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Users"],
@@ -1123,11 +1124,11 @@ export const {
   useDeletePaymentMutation,
 
   // ProfitLoss
-  useGetProfitLossEntriesQuery,
-  useGetProfitLossByIdQuery,
-  useCreateProfitLossMutation,
-  useUpdateProfitLossMutation,
-  useDeleteProfitLossMutation,
+  useGetEarningsQuery,
+  useGetEarningByIdQuery,
+  useCreateEarningMutation,
+  useUpdateEarningMutation,
+  useDeleteEarningMutation,
 
   // Roles
   useGetRolesQuery,
