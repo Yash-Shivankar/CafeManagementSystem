@@ -77,7 +77,7 @@ const Tables = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Tables</h1>
         <Button label="Add Table" onClick={() => setShowForm(true)} />

@@ -48,6 +48,18 @@ const EmployeeAttendances = () => {
       render: (employee) =>
         `${employee?.user?.first_name ?? ""} ${employee?.user?.last_name ?? ""}`.trim(),
     },
+    {
+      key: "date",
+      label: "Date",
+      render: (value) => {
+        const date = new Date(value);
+        return date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      },
+    },
     { key: "session", label: "Session" },
     {
       key: "check_in",
@@ -176,7 +188,7 @@ const EmployeeAttendances = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Employee Attendances</h1>
         <Button

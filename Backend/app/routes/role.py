@@ -1,6 +1,7 @@
 # app/rotes/roles.py
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.Role import Role
@@ -31,10 +32,19 @@ def get_role(role_id: int, db: Session = Depends(get_db)):
 def list_roles(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
-    roles, total = role_crud.get_multi_paginated(db, skip=skip, limit=limit)
+    filters = []
+    if search:
+        filters.append(or_(Role.role_name.ilike(f"%{search}%")))
+    roles, total = role_crud.get_multi_paginated(
+        db,
+        skip=skip,
+        limit=limit,
+        filters=filters,
+    )
     total_pages = ceil(total / limit)
     return {
         "data": roles,

@@ -1,5 +1,6 @@
 # app/api/routes/users.py
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.crud.base import CRUDBase
@@ -39,14 +40,34 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 def list_users(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    is_active: bool | None = Query(None),
+    role_id: int | None = Query(None),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
+
+    filters = []
+
+    if is_active is not None:
+        filters.append(User.is_active == is_active)
+    if role_id:
+        filters.append(User.role_id == role_id)
+
+    if search:
+        filters.append(
+            or_(
+                User.email.ilike(f"%{search}%"),
+                User.first_name.ilike(f"%{search}%"),
+                User.last_name.ilike(f"%{search}%"),
+            )
+        )
 
     users, total = crud_user.get_multi_paginated(
         db,
         skip=skip,
         limit=limit,
+        filters=filters,
         relationships=[
             "role",
         ],

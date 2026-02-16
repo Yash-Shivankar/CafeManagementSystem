@@ -13,7 +13,7 @@ const PaymentTabs = () => {
   const ActiveComponent = tabs.find((tab) => tab.key === activeTab)?.component;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-6">
       {/* Tabs */}
       <div className="flex flex-wrap gap-6 border-b">
         {tabs.map(({ key, label }) => (

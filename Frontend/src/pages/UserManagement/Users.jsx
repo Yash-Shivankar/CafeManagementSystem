@@ -12,20 +12,77 @@ import {
   useDeleteUserMutation,
   useGetRolesQuery,
 } from "../../app/allSlices";
+import FilterBar from "../../components/FilterBar";
 
 const Users = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
-  const { data, isLoading, refetch } = useGetUsersQuery({ page, limit });
+  const { data, isLoading, refetch } = useGetUsersQuery({
+    page,
+    limit,
+    ...appliedFilters,
+  });
   const { data: rolesData } = useGetRolesQuery();
 
   const [createUser] = useCreateUserMutation();
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser] = useDeleteUserMutation();
+
+  /* -------------------- Filters -------------------- */
+  const userFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Name / Email / Mobile",
+    },
+    {
+      name: "role_id",
+      label: "Role",
+      type: "select",
+      options:
+        rolesData?.data?.map((r) => ({
+          label: r.role_name,
+          value: r.id,
+        })) || [],
+    },
+    {
+      name: "is_active",
+      label: "Status",
+      type: "select",
+      options: [
+        { label: "Active", value: true },
+        { label: "Inactive", value: false },
+      ],
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   /* -------------------- COLUMNS (UNCHANGED) -------------------- */
 
@@ -137,11 +194,19 @@ const Users = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Users</h1>
         <Button label="Add User" onClick={() => setShowForm(true)} />
       </div>
+
+      <FilterBar
+        filters={userFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

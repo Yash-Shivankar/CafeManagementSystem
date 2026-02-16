@@ -6,7 +6,7 @@ const UsersTabs = () => {
   const [tab, setTab] = useState("users");
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-6">
       {/* Tabs */}
       <div className="flex gap-4 border-b">
         <button

@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -16,14 +17,50 @@ const Roles = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
-  const { data, isLoading, refetch } = useGetRolesQuery({ page, limit });
+  const { data, isLoading, refetch } = useGetRolesQuery({
+    page,
+    limit,
+    ...appliedFilters,
+  });
 
   const [createRole] = useCreateRoleMutation();
   const [updateRole] = useUpdateRoleMutation();
   const [deleteRole] = useDeleteRoleMutation();
+
+  const userFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Role Name",
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   const columns = [
     { key: "id", label: "Id" },
@@ -66,11 +103,19 @@ const Roles = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Roles</h1>
         <Button label="Add Role" onClick={() => setShowForm(true)} />
       </div>
+
+      <FilterBar
+        filters={userFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

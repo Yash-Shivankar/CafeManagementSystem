@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -19,12 +20,15 @@ const EmployeeDetails = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingDetail, setEditingDetail] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
   const { data, isLoading, refetch } = useGetEmployeeDetailsQuery({
     page,
     limit,
+    ...appliedFilters,
   });
   const { data: usersData } = useGetUsersQuery();
   const { data: DesignationsData } = useGetDesignationsQuery();
@@ -33,6 +37,78 @@ const EmployeeDetails = () => {
   const [createDetail] = useCreateEmployeeDetailMutation();
   const [updateDetail] = useUpdateEmployeeDetailMutation();
   const [deleteDetail] = useDeleteEmployeeDetailMutation();
+
+  const userFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "User / Employee Code",
+    },
+    {
+      name: "employment_type",
+      label: "Employment Type",
+      type: "select",
+      options: [
+        { label: "Full Time", value: "full-time" },
+        { label: "Part Time", value: "part-time" },
+        { label: "Contract", value: "contract" },
+        { label: "Intern", value: "intern" },
+      ],
+    },
+    {
+      name: "department_id",
+      label: "Department",
+      type: "select",
+      options:
+        DepartmentsData?.data?.map((dept) => ({
+          label: dept.department_name,
+          value: dept.id,
+        })) || [],
+    },
+    {
+      name: "designation_id",
+      label: "Designation",
+      type: "select",
+      options:
+        DesignationsData?.data?.map((desg) => ({
+          label: desg.designation_name,
+          value: desg.id,
+        })) || [],
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: [
+        { label: "Active", value: "active" },
+        { label: "Inactive", value: "inactive" },
+        { label: "Resigned", value: "resigned" },
+        { label: "Terminated", value: "terminated" },
+      ],
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   const columns = [
     { key: "id", label: "Id" },
@@ -45,6 +121,16 @@ const EmployeeDetails = () => {
     { key: "employee_code", label: "Employee Code" },
     { key: "employment_type", label: "Employment Type" },
     {
+      key: "department",
+      label: "Department",
+      render: (dept) => dept?.department_name ?? "-",
+    },
+    {
+      key: "designation",
+      label: "Designation",
+      render: (desg) => desg?.designation_name ?? "-",
+    },
+    {
       key: "joining_date",
       label: "Joining Date",
       render: (value) => {
@@ -56,16 +142,13 @@ const EmployeeDetails = () => {
         });
       },
     },
-    { key: "status", label: "Status" },
     {
-      key: "department",
-      label: "Department",
-      render: (dept) => dept?.department_name ?? "-",
-    },
-    {
-      key: "designation",
-      label: "Designation",
-      render: (desg) => desg?.designation_name ?? "-",
+      key: "status",
+      label: "Status",
+      render: (status) =>
+        status
+          ? status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+          : "-",
     },
   ];
 
@@ -168,7 +251,7 @@ const EmployeeDetails = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Employee Details</h1>
         <Button
@@ -176,6 +259,14 @@ const EmployeeDetails = () => {
           onClick={() => setShowForm(true)}
         />
       </div>
+
+      <FilterBar
+        filters={userFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

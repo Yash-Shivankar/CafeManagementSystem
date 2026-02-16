@@ -136,7 +136,7 @@ const Payments = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Payments</h1>
         <Button label="Add Payment" onClick={() => setShowForm(true)} />
