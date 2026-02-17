@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -16,17 +17,50 @@ const InventoryCategories = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
   const { data, isLoading, refetch } = useGetInventoryCategoriesQuery({
     page,
     limit,
+    ...appliedFilters,
   });
 
   const [createCategory] = useCreateInventoryCategoryMutation();
   const [updateCategory] = useUpdateInventoryCategoryMutation();
   const [deleteCategory] = useDeleteInventoryCategoryMutation();
+
+  const categoryFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Category Name",
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   const columns = [
     { key: "id", label: "Id" },
@@ -78,6 +112,14 @@ const InventoryCategories = () => {
         <h1 className="text-2xl font-bold">Categories</h1>
         <Button label="Add Category" onClick={() => setShowForm(true)} />
       </div>
+
+      <FilterBar
+        filters={categoryFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

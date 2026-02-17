@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -17,10 +18,16 @@ const Payments = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
-  const { data, isLoading, refetch } = useGetPaymentsQuery({ page, limit });
+  const { data, isLoading, refetch } = useGetPaymentsQuery({
+    page,
+    limit,
+    ...appliedFilters,
+  });
 
   const { data: invoicesData } = useGetCustomerInvoicesQuery();
 
@@ -32,6 +39,57 @@ const Payments = () => {
     if (!value) return "";
     return value.split("T")[0];
   };
+
+  const paymentFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Invoice",
+    },
+    {
+      name: "method",
+      label: "Payment Method",
+      type: "select",
+      options: [
+        { label: "Cash", value: "cash" },
+        { label: "Card", value: "card" },
+        { label: "UPI", value: "upi" },
+      ],
+    },
+    {
+      name: "start_date",
+      label: "Start Date",
+      type: "date",
+    },
+    {
+      name: "end_date",
+      label: "End Date",
+      type: "date",
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
+
   const columns = [
     { key: "id", label: "Id" },
     {
@@ -141,6 +199,14 @@ const Payments = () => {
         <h1 className="text-2xl font-bold">Payments</h1>
         <Button label="Add Payment" onClick={() => setShowForm(true)} />
       </div>
+
+      <FilterBar
+        filters={paymentFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

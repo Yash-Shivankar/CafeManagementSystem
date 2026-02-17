@@ -32,7 +32,7 @@ const Roles = () => {
   const [updateRole] = useUpdateRoleMutation();
   const [deleteRole] = useDeleteRoleMutation();
 
-  const userFiltersConfig = [
+  const roleFiltersConfig = [
     {
       name: "search",
       label: "Search",
@@ -110,7 +110,7 @@ const Roles = () => {
       </div>
 
       <FilterBar
-        filters={userFiltersConfig}
+        filters={roleFiltersConfig}
         values={filters}
         onChange={handleFilterChange}
         onApply={applyFilters}

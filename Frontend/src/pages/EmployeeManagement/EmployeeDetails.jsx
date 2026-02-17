@@ -38,7 +38,7 @@ const EmployeeDetails = () => {
   const [updateDetail] = useUpdateEmployeeDetailMutation();
   const [deleteDetail] = useDeleteEmployeeDetailMutation();
 
-  const userFiltersConfig = [
+  const detailsFiltersConfig = [
     {
       name: "search",
       label: "Search",
@@ -261,7 +261,7 @@ const EmployeeDetails = () => {
       </div>
 
       <FilterBar
-        filters={userFiltersConfig}
+        filters={detailsFiltersConfig}
         values={filters}
         onChange={handleFilterChange}
         onApply={applyFilters}

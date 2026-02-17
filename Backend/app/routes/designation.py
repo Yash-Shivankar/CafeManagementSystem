@@ -1,5 +1,6 @@
 # app/api/designations.py
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
@@ -43,11 +44,20 @@ def get_designation(designation_id: int, db: Session = Depends(get_db)):
 def list_designations(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
+
+    filters = []
+    if search:
+        filters.append(or_(Designation.designation_name.ilike(f"%{search}%")))
+
     designations, total = designation_crud.get_multi_paginated(
-        db, skip=skip, limit=limit
+        db,
+        skip=skip,
+        limit=limit,
+        filters=filters,
     )
     total_pages = ceil(total / limit)
     return {

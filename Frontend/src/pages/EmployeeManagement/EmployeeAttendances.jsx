@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -17,12 +18,15 @@ const EmployeeAttendances = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingAttendance, setEditingAttendance] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
   const { data, isLoading, refetch } = useGetEmployeeAttendancesQuery({
     page,
     limit,
+    ...appliedFilters,
   });
   const { data: detailsData } = useGetEmployeeDetailsQuery();
 
@@ -38,6 +42,65 @@ const EmployeeAttendances = () => {
   const extractTime = (datetime) => {
     if (!datetime) return "";
     return datetime.slice(11, 16);
+  };
+
+  const attendanceFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Employee Name",
+    },
+    {
+      name: "session",
+      label: "Session",
+      type: "select",
+      options: [
+        { label: "Session 1", value: "session_1" },
+        { label: "Session 2", value: "session_2" },
+      ],
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: [
+        { label: "Present", value: "present" },
+        { label: "Absent", value: "absent" },
+        { label: "Leave", value: "leave" },
+      ],
+    },
+    {
+      name: "start_date",
+      label: "Start Date",
+      type: "date",
+    },
+    {
+      name: "end_date",
+      label: "End Date",
+      type: "date",
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
   };
 
   const columns = [
@@ -196,6 +259,14 @@ const EmployeeAttendances = () => {
           onClick={() => setShowForm(true)}
         />
       </div>
+
+      <FilterBar
+        filters={attendanceFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

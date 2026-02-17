@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -17,12 +18,15 @@ const InventoryItems = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
   const { data, isLoading, refetch } = useGetInventoryItemsQuery({
     page,
     limit,
+    ...appliedFilters,
   });
 
   const { data: categoriesData } = useGetInventoryCategoriesQuery();
@@ -30,6 +34,47 @@ const InventoryItems = () => {
   const [createItem] = useCreateInventoryItemMutation();
   const [updateItem] = useUpdateInventoryItemMutation();
   const [deleteItem] = useDeleteInventoryItemMutation();
+
+  const itemFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Name",
+    },
+    {
+      name: "category_id",
+      label: "Category",
+      type: "select",
+      options:
+        categoriesData?.data?.map((c) => ({
+          label: c.category_name,
+          value: c.id,
+        })) || [],
+      required: true,
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   const columns = [
     { key: "id", label: "Id" },
@@ -148,6 +193,14 @@ const InventoryItems = () => {
         <h1 className="text-2xl font-bold">Items</h1>
         <Button label="Add Item" onClick={() => setShowForm(true)} />
       </div>
+
+      <FilterBar
+        filters={itemFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

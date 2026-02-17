@@ -1,9 +1,12 @@
 # app/api/employee_document.py
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.EmployeeDocument import EmployeeDocument
+from app.models.EmployeeDetails import EmployeeDetails
+from app.models.User import User
 from app.schemas.employee_document import (
     EmployeeDocumentCreate,
     EmployeeDocumentUpdate,
@@ -43,11 +46,31 @@ def get_document(document_id: int, db: Session = Depends(get_db)):
 def list_documents(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
+    filters = []
+
+    if search:
+        filters.append(
+            or_(
+                EmployeeDocument.filename.ilike(f"%{search}%"),
+                EmployeeDocument.original_name.ilike(f"%{search}%"),
+                EmployeeDocument.doc_type.ilike(f"%{search}%"),
+                EmployeeDocument.employee.has(
+                    EmployeeDetails.user.has(
+                        or_(
+                            User.first_name.ilike(f"%{search}%"),
+                            User.last_name.ilike(f"%{search}%"),
+                        )
+                    ),
+                ),
+            )
+        )
+
     documents, total = document_crud.get_multi_paginated(
-        db, skip=skip, limit=limit, relationships=["employee"]
+        db, skip=skip, limit=limit, filters=filters, relationships=["employee"]
     )
     total_pages = ceil(total / limit)
     return {

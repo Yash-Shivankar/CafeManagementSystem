@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -16,14 +17,50 @@ const Designations = () => {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingDesignation, setEditingDesignation] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
-  const { data, isLoading, refetch } = useGetDesignationsQuery({ page, limit });
+  const { data, isLoading, refetch } = useGetDesignationsQuery({
+    page,
+    limit,
+    ...appliedFilters,
+  });
 
   const [createDesignation] = useCreateDesignationMutation();
   const [updateDesignation] = useUpdateDesignationMutation();
   const [deleteDesignation] = useDeleteDesignationMutation();
+
+  const designationFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Designation Name",
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   const columns = [
     { key: "id", label: "Id" },
@@ -75,6 +112,14 @@ const Designations = () => {
         <h1 className="text-2xl font-bold">Designations</h1>
         <Button label="Add Designation" onClick={() => setShowForm(true)} />
       </div>
+
+      <FilterBar
+        filters={designationFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 
 import {
@@ -12,7 +13,6 @@ import {
   useDeleteUserMutation,
   useGetRolesQuery,
 } from "../../app/allSlices";
-import FilterBar from "../../components/FilterBar";
 
 const Users = () => {
   const [page, setPage] = useState(1);
@@ -34,7 +34,6 @@ const Users = () => {
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser] = useDeleteUserMutation();
 
-  /* -------------------- Filters -------------------- */
   const userFiltersConfig = [
     {
       name: "search",
@@ -84,8 +83,6 @@ const Users = () => {
     setPage(1);
   };
 
-  /* -------------------- COLUMNS (UNCHANGED) -------------------- */
-
   const columns = [
     { key: "id", label: "Id" },
     {
@@ -120,8 +117,6 @@ const Users = () => {
       render: (v) => (v ? "Active" : "Inactive"),
     },
   ];
-
-  /* -------------------- FORM FIELDS -------------------- */
 
   const userFormFields = [
     { name: "first_name", label: "First Name", type: "text" },
@@ -159,8 +154,6 @@ const Users = () => {
       ],
     },
   ];
-
-  /* -------------------- HANDLERS -------------------- */
 
   const handleSubmit = async (formData) => {
     try {

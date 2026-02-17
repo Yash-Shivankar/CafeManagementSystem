@@ -1,9 +1,12 @@
 # app/api/customer_invoices.py
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from datetime import date
 from typing import List
 from app.crud.base import CRUDBase
 from app.models.CustomerInvoice import CustomerInvoice
+from app.models.User import User
 from app.schemas.customer_invoice import (
     CustomerInvoiceCreate,
     CustomerInvoiceUpdate,
@@ -43,11 +46,37 @@ def get_invoice(invoice_id: int, db: Session = Depends(get_db)):
 def list_invoices(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    start_date: date | None = Query(None),
+    end_date: date | None = Query(None),
+    status: str | None = Query(None),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
+
+    filters = []
+
+    if start_date:
+        filters.append(CustomerInvoice.invoice_date >= start_date)
+    if end_date:
+        filters.append(CustomerInvoice.invoice_date <= end_date)
+    if status:
+        filters.append(CustomerInvoice.status == status)
+
+    if search:
+        filters.append(
+            or_(
+                CustomerInvoice.user.has(
+                    or_(
+                        User.first_name.ilike(f"%{search}%"),
+                        User.last_name.ilike(f"%{search}%"),
+                    )
+                ),
+            )
+        )
+
     invoices, total = invoice_crud.get_multi_paginated(
-        db, skip=skip, limit=limit, relationships=["user"]
+        db, skip=skip, limit=limit, filters=filters, relationships=["user"]
     )
     total_pages = ceil(total / limit)
     return {

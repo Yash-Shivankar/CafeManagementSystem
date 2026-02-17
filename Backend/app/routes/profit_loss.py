@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
-
+from datetime import date
 from app.crud.base import CRUDBase
 from app.models.ProfitLoss import ProfitLoss
 from app.schemas.profit_loss import (
@@ -53,11 +53,19 @@ def get_profit_loss(
 def list_profit_loss(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    start_date: date | None = Query(None),
+    end_date: date | None = Query(None),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
+    filters = []
+    if start_date:
+        filters.append(ProfitLoss.date >= start_date)
+    if end_date:
+        filters.append(ProfitLoss.date <= end_date)
+
     profit_loss, total = profit_loss_crud.get_multi_paginated(
-        db, skip=skip, limit=limit
+        db, skip=skip, filters=filters, limit=limit
     )
     total_pages = ceil(total / limit)
     return {

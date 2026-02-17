@@ -39,6 +39,7 @@ def list_roles(
     filters = []
     if search:
         filters.append(or_(Role.role_name.ilike(f"%{search}%")))
+
     roles, total = role_crud.get_multi_paginated(
         db,
         skip=skip,

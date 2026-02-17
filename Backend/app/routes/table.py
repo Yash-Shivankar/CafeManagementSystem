@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import cast, String, or_
 from sqlalchemy.orm import Session
 from typing import List
 from app.crud.base import CRUDBase
@@ -47,10 +48,23 @@ def get_table(
 def list_tables(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
-    tables, total = table_crud.get_multi_paginated(db, skip=skip, limit=limit)
+
+    filters = []
+    if search:
+        filters.append(
+            or_(
+                Table.table_number.ilike(f"%{search}%"),
+                cast(Table.seating_capacity, String).ilike(f"%{search}%"),
+            )
+        )
+
+    tables, total = table_crud.get_multi_paginated(
+        db, skip=skip, limit=limit, filters=filters
+    )
     total_pages = ceil(total / limit)
     return {
         "data": tables,

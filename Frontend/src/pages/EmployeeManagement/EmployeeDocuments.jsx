@@ -3,6 +3,7 @@ import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
+import FilterBar from "../../components/FilterBar";
 import { toast } from "react-toastify";
 import { BaseUrl } from "../../config/config";
 
@@ -21,12 +22,15 @@ const EmployeeDocuments = () => {
   const [editingDocument, setEditingDocument] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewType, setPreviewType] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const limit = 10;
 
   const { data, isLoading, refetch } = useGetEmployeeDocumentsQuery({
     page,
     limit,
+    ...appliedFilters,
   });
   const { data: detailsData } = useGetEmployeeDetailsQuery();
 
@@ -34,6 +38,36 @@ const EmployeeDocuments = () => {
   const [updateDocument] = useUpdateEmployeeDocumentMutation();
   const [deleteDocument] = useDeleteEmployeeDocumentMutation();
   const [uploadDocument] = useUploadFileMutation();
+
+  const documentsFiltersConfig = [
+    {
+      name: "search",
+      label: "Search",
+      type: "text",
+      placeholder: "Employee Name / Filename / Orginal Name / Document Type",
+    },
+  ];
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const applyFilters = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([_, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+
+    setPage(1);
+    setAppliedFilters(cleanedFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setAppliedFilters({});
+    setPage(1);
+  };
 
   const columns = [
     { key: "id", label: "Id" },
@@ -171,6 +205,14 @@ const EmployeeDocuments = () => {
           onClick={() => setShowForm(true)}
         />
       </div>
+
+      <FilterBar
+        filters={documentsFiltersConfig}
+        values={filters}
+        onChange={handleFilterChange}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
       <DataTable
         loading={isLoading}

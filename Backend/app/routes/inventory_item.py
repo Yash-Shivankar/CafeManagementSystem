@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -66,11 +67,26 @@ def get_inventory_item(
 def list_inventory_items(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
+    category_id: int | None = Query(None),
+    search: str | None = Query(None, min_length=1),
     db: Session = Depends(get_db),
 ):
     skip = (page - 1) * limit
+
+    filters = []
+
+    if category_id:
+        filters.append(InventoryItem.category_id == category_id)
+
+    if search:
+        filters.append(
+            or_(
+                InventoryItem.name.ilike(f"%{search}%"),
+            )
+        )
+
     inventory_items, total = item_crud.get_multi_paginated(
-        db, skip=skip, limit=limit, relationships=["category"]
+        db, skip=skip, limit=limit, filters=filters, relationships=["category"]
     )
     total_pages = ceil(total / limit)
     return {
