@@ -211,3 +211,4 @@ __marimo__/
 *Test.txt
 media/
 *.bat
+node_modules/
