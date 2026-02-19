@@ -208,6 +208,16 @@ export const allSlices = createApi({
       invalidatesTags: ["CustomerInvoices"],
     }),
 
+    // Dashboard
+    getDashboardStats: builder.query({
+      query: (params = {}) => ({
+        url: "/api/v1/dashboard/stats",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Dashboard"],
+    }),
+
     // Departments
     getDepartments: builder.query({
       query: (params = {}) => ({
@@ -1041,6 +1051,9 @@ export const {
   useCreateCustomerInvoiceMutation,
   useUpdateCustomerInvoiceMutation,
   useDeleteCustomerInvoiceMutation,
+
+  // Dashboard
+  useGetDashboardStatsQuery,
 
   // Departments
   useGetDepartmentsQuery,

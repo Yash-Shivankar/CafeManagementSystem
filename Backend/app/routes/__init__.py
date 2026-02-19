@@ -6,6 +6,7 @@ from app.routes.booking import router as booking_router
 from app.routes.common import router as common_router
 from app.routes.customer_feedback import router as customer_feedback_router
 from app.routes.customer_invoice import router as customer_invoice_router
+from app.routes.dashboard import router as dashboard_router
 from app.routes.department import router as department_router
 from app.routes.designation import router as designation_router
 from app.routes.employee_attendance import router as employee_attendance_router
@@ -33,6 +34,7 @@ api_router.include_router(booking_router)
 api_router.include_router(common_router)
 api_router.include_router(customer_feedback_router)
 api_router.include_router(customer_invoice_router)
+api_router.include_router(dashboard_router)
 api_router.include_router(department_router)
 api_router.include_router(designation_router)
 api_router.include_router(employee_attendance_router)

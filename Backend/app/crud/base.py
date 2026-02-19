@@ -1,5 +1,6 @@
 # app/crud/base.py
 from typing import Generic, TypeVar, Type, Optional
+from sqlalchemy import desc
 from sqlalchemy.orm import Session, selectinload
 from pydantic import BaseModel
 from app.core.security import hash_password
@@ -39,7 +40,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         filters: Optional[list] = None,
         relationships: Optional[list[str]] = None,
     ):
-        query = db.query(self.model).filter(self.model.is_deleted == False)
+        query = (
+            db.query(self.model)
+            .filter(self.model.is_deleted == False)
+            .order_by(desc(self.model.created_at))
+        )
         if filters:
             for condition in filters:
                 query = query.filter(condition)
