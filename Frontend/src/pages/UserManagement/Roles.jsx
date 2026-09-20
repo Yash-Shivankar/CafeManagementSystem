@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +15,7 @@ import {
 } from "../../app/allSlices";
 
 const Roles = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
@@ -48,7 +50,7 @@ const Roles = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -90,9 +92,15 @@ const Roles = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this role?")) return;
-
-    try {
+    if (!(await confirm({
+        title: "Delete this role?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
+      return;
+    }try {
       await deleteRole(row.id).unwrap();
       toast.success("Role deleted successfully");
       refetch();

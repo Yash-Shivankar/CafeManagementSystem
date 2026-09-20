@@ -1,95 +1,61 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from typing import List
+"""Incentives endpoints.
 
-from app.crud.base import CRUDBase
-from app.models.Incentives import Incentives
+HTTP binding only: path, verb, response model. What happens next is
+IncentiveService; how it is fetched is IncentiveRepository.
+"""
+
+from fastapi import APIRouter, Depends
+
+from app.controllers.incentiveController import IncentiveController
 from app.schemas.incentives import (
     IncentiveCreate,
-    IncentiveUpdate,
     IncentiveOut,
+    IncentiveUpdate,
     PaginatedIncentiveOut,
 )
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from math import ceil
+from app.utils.pagination import PageParams, page_params
 
 router = APIRouter(prefix="/incentives", tags=["Incentives"])
 
-incentive_crud = CRUDBase[Incentives, IncentiveCreate, IncentiveUpdate](Incentives)
 
-
-@router.post("/", response_model=IncentiveOut)
-def create_incentive(
-    obj_in: IncentiveCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+@router.get("/", response_model=PaginatedIncentiveOut)
+def list_incentives(
+    params: PageParams = Depends(page_params),
+    controller: IncentiveController = Depends(),
 ):
-    return incentive_crud.create(
-        db=db,
-        obj_in=obj_in,
-        current_user=current_user,
+    return controller.list(
+        params,
     )
 
 
 @router.get("/{incentive_id}", response_model=IncentiveOut)
 def get_incentive(
     incentive_id: int,
-    db: Session = Depends(get_db),
+    controller: IncentiveController = Depends(),
 ):
-    return incentive_crud.get(db, incentive_id)
+    return controller.get(incentive_id)
 
 
-# @router.get("/", response_model=List[IncentiveOut])
-# def list_incentives(
-#     skip: int = 0,
-#     limit: int = 100,
-#     db: Session = Depends(get_db),
-# ):
-#     return incentive_crud.get_multi(db, skip=skip, limit=limit)
-
-
-@router.get("/", response_model=PaginatedIncentiveOut)
-def list_incentives(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db),
+@router.post("/", response_model=IncentiveOut)
+def create_incentive(
+    payload: IncentiveCreate,
+    controller: IncentiveController = Depends(),
 ):
-    skip = (page - 1) * limit
-    incentives, total = incentive_crud.get_multi_paginated(db, skip=skip, limit=limit)
-    total_pages = ceil(total / limit)
-    return {
-        "data": incentives,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+    return controller.create(payload)
 
 
 @router.put("/{incentive_id}", response_model=IncentiveOut)
 def update_incentive(
     incentive_id: int,
-    obj_in: IncentiveUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: IncentiveUpdate,
+    controller: IncentiveController = Depends(),
 ):
-    db_obj = incentive_crud.get(db, incentive_id)
-    return incentive_crud.update(
-        db=db,
-        db_obj=db_obj,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
+    return controller.update(incentive_id, payload)
 
 
 @router.delete("/{incentive_id}", response_model=IncentiveOut)
 def delete_incentive(
     incentive_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: IncentiveController = Depends(),
 ):
-    return incentive_crud.remove(
-        db=db,
-        id=incentive_id,
-        current_user=current_user,
-    )
+    return controller.delete(incentive_id)

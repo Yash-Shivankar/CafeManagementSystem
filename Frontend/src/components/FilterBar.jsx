@@ -2,7 +2,7 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
   return (
     <div className="w-full mb-4">
       <div className="flex flex-wrap gap-4 items-end w-full">
-        {/* Filters */}
+
         <div className="flex flex-wrap gap-4 flex-1">
           {filters.map((filter) => {
             const label = filter.label;
@@ -13,7 +13,7 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                   key={filter.name}
                   className="flex flex-col gap-1 flex-1 min-w-[220px]"
                 >
-                  <label className="text-xs text-text-secondary">{label}</label>
+                  <label className="text-xs font-medium text-muted-foreground">{label}</label>
 
                   <input
                     type="text"
@@ -22,7 +22,7 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                     onChange={(e) => onChange(filter.name, e.target.value)}
                     className="
                       h-10 px-4 rounded-md
-                      bg-surface text-text placeholder:text-text-secondary
+                      bg-surface text-foreground placeholder:text-muted-foreground
                       border border-border
                       focus:outline-none focus:ring-2 focus:ring-primary
                       transition
@@ -38,14 +38,14 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                   key={filter.name}
                   className="flex flex-col gap-1 min-w-[160px]"
                 >
-                  <label className="text-xs text-text-secondary">{label}</label>
+                  <label className="text-xs font-medium text-muted-foreground">{label}</label>
 
                   <select
                     value={values[filter.name] ?? ""}
                     onChange={(e) => onChange(filter.name, e.target.value)}
                     className="
                       h-10 px-4 rounded-md
-                      bg-surface text-text
+                      bg-surface text-foreground
                       border border-border
                       focus:outline-none focus:ring-2 focus:ring-primary
                       transition
@@ -74,7 +74,7 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                   key={filter.name}
                   className="flex flex-col gap-1 min-w-[160px]"
                 >
-                  <label className="text-xs text-text-secondary">{label}</label>
+                  <label className="text-xs font-medium text-muted-foreground">{label}</label>
 
                   <input
                     type="date"
@@ -82,7 +82,7 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                     onChange={(e) => onChange(filter.name, e.target.value)}
                     className="
                       h-10 px-4 rounded-md
-                      bg-surface text-text
+                      bg-surface text-foreground
                       border border-border
                       focus:outline-none focus:ring-2 focus:ring-primary
                       transition
@@ -96,7 +96,6 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
           })}
         </div>
 
-        {/* Actions */}
         {(onApply || onReset) && (
           <div className="flex gap-2 ml-auto">
             {onApply && (
@@ -104,7 +103,7 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                 onClick={onApply}
                 className="
                   h-10 px-5 rounded-md
-                  bg-primary text-white
+                  bg-primary text-on-primary
                   hover:bg-primary-dark
                   transition
                 "
@@ -119,8 +118,8 @@ const FilterBar = ({ filters, values, onChange, onApply, onReset }) => {
                 className="
                   h-10 px-5 rounded-md
                   border border-border
-                  text-text
-                  hover:bg-background
+                  text-foreground
+                  hover:bg-muted
                   transition
                 "
               >

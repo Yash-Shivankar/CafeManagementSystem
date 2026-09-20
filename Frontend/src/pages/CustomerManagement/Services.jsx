@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +16,7 @@ import {
 } from "../../app/allSlices";
 
 const Services = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState(null);
@@ -48,7 +51,7 @@ const Services = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -70,7 +73,7 @@ const Services = () => {
       label: "Price",
       render: (price) =>
         price !== null && price !== undefined
-          ? `₹ ${Number(price).toFixed(2)}`
+          ? formatMoney(price)
           : "-",
     },
   ];
@@ -109,10 +112,15 @@ const Services = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this service?"))
+    if (!(await confirm({
+          title: "Delete this service?",
+          message:
+            "It will stop appearing in lists and reports. This cannot be undone from the app.",
+          tone: "danger",
+          confirmLabel: "Delete",
+          }))) {
       return;
-
-    try {
+    }try {
       await deleteService(row.id).unwrap();
       toast.success("Service deleted successfully");
       refetch();

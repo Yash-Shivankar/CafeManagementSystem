@@ -1,46 +1,43 @@
-# app/schemas/booking.py
 from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.Enums import BookingStatus
 
 
 class BookingBase(BaseModel):
     user_id: int
-    staff_user_id: Optional[int] = None
-    service_id: Optional[int] = None
-    table_id: Optional[int] = None
-    booking_date: Optional[datetime] = None
-    status: Optional[BookingStatus] = BookingStatus.SCHEDULED
+    staff_user_id: int | None = None
+    service_id: int | None = None
+    table_id: int | None = None
+    booking_date: datetime | None = None
+    status: BookingStatus | None = BookingStatus.SCHEDULED
 
 
 class BookingCreate(BookingBase):
-    pass  # All fields can be provided optionally; booking_date defaults to now
+    pass
 
 
 class BookingUpdate(BaseModel):
-    staff_user_id: Optional[int] = None
-    service_id: Optional[int] = None
-    table_id: Optional[int] = None
-    booking_date: Optional[datetime] = None
-    status: Optional[BookingStatus] = None
+    staff_user_id: int | None = None
+    service_id: int | None = None
+    table_id: int | None = None
+    booking_date: datetime | None = None
+    status: BookingStatus | None = None
 
 
 class BookingOut(BookingBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedBookingOut(BaseModel):
-    data: List[BookingOut]
+    data: list[BookingOut]
     total: int
     totalPages: int
     currentPage: int

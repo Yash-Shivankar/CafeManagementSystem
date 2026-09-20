@@ -1,4 +1,3 @@
-// config/sidebarMenu.js
 import {
   Home,
   Users,
@@ -9,6 +8,10 @@ import {
   UserCheck,
   Package,
   CreditCard,
+  Store,
+  BookOpen,
+  ChefHat,
+  ReceiptText,
 } from "lucide-react";
 
 export const sidebarMenu = [
@@ -17,6 +20,12 @@ export const sidebarMenu = [
     path: "/dashboard",
     icon: Home,
     module: "dashboard",
+  },
+  {
+    label: "Outlets",
+    path: "/outlet-management",
+    icon: Store,
+    module: "outlets",
   },
   {
     label: "Users",
@@ -29,6 +38,24 @@ export const sidebarMenu = [
     path: "/employee-management",
     icon: UserCheck,
     module: "employees",
+  },
+  {
+    label: "Orders",
+    path: "/orders",
+    icon: ReceiptText,
+    module: "orders",
+  },
+  {
+    label: "Kitchen",
+    path: "/kitchen",
+    icon: ChefHat,
+    module: "orders",
+  },
+  {
+    label: "Menu",
+    path: "/menu-management",
+    icon: BookOpen,
+    module: "menu",
   },
   {
     label: "Customers",

@@ -1,9 +1,0 @@
-Commands
-uvicorn app.main:app --reload
-alembic revision --autogenerate -m "initial tables"
-alembic revision --autogenerate -m "add created_by and updated_by"
-alembic revision --autogenerate -m "add table AppSettings"
-alembic revision --autogenerate -m "update table EmployeeDocuments"
-alembic upgrade head
-py manage.py seed-all
-

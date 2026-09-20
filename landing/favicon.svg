@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Caelum">
+  <title>Caelum</title>
+  <!--
+    The mark from BRAND.md §4: a square frame, a tapered chisel blade, and a
+    struck line beneath it. Reads as a chisel and as a counter edge.
+
+    Deliberately NOT a coffee cup — a coffee cup is a cafe's logo, so a cafe
+    owner reads it as a competitor rather than a supplier (D-010).
+
+    One colour, square corners, legible at 16px. The background is painted so
+    the mark survives a dark browser chrome as well as a light one.
+  -->
+  <rect width="40" height="40" fill="#0E4433"/>
+  <rect x="3.5" y="3.5" width="33" height="33" fill="none" stroke="#4FBE8C" stroke-width="2.4"/>
+  <path d="M13 9 h8.5 l4.7 16 -9 0 z" fill="#4FBE8C"/>
+  <path d="M13 29.5 h15" stroke="#4FBE8C" stroke-width="2.6" stroke-linecap="square"/>
+</svg>

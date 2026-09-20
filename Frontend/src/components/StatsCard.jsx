@@ -13,7 +13,7 @@ const StatsCard = ({
   icon: Icon,
   iconSize = "md",
   loading = false,
-  className = "", // 👈 size comes from here
+  className = "",
 }) => {
   return (
     <div
@@ -21,20 +21,26 @@ const StatsCard = ({
         relative
         rounded-md
         border border-border
-        bg-background/60
+        bg-surface/60
         backdrop-blur-lg
         px-6 py-5
         shadow-sm
         transition
-        hover:bg-background/70
+        hover:bg-surface/80
         ${className}
       `}
     >
-      {/* glass highlight */}
-      <div className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-br from-white/10 to-transparent" />
+
+      <div
+        className="pointer-events-none absolute inset-0 rounded-md"
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom right, rgb(var(--color-sheen) / var(--sheen-opacity)), transparent)",
+        }}
+      />
 
       <div className="relative flex h-full flex-col justify-between">
-        {/* Header */}
+
         <div className="flex items-start justify-between">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
             {label}
@@ -49,7 +55,6 @@ const StatsCard = ({
           )}
         </div>
 
-        {/* Value */}
         {loading ? (
           <div className="h-8 w-24 rounded bg-muted animate-pulse" />
         ) : (
@@ -58,7 +63,6 @@ const StatsCard = ({
           </div>
         )}
 
-        {/* Description */}
         {description && !loading && (
           <p className="text-sm text-muted-foreground">{description}</p>
         )}

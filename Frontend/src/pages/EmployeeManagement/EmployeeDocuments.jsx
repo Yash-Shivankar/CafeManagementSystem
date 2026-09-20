@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -17,6 +18,7 @@ import {
 } from "../../app/allSlices";
 
 const EmployeeDocuments = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingDocument, setEditingDocument] = useState(null);
@@ -55,7 +57,7 @@ const EmployeeDocuments = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -138,7 +140,6 @@ const EmployeeDocuments = () => {
     try {
       let uploadedFileData = null;
 
-      // 1️⃣ Upload file
       if (formData.file instanceof File) {
         const filePayload = new FormData();
         filePayload.append("file", formData.file);
@@ -147,7 +148,6 @@ const EmployeeDocuments = () => {
         console.log("Upload Response:", uploadedFileData);
       }
 
-      // 2️⃣ Build payload using upload response
       const payload = {
         employee_id: formData.employee_id,
         filename: uploadedFileData?.filename,
@@ -157,7 +157,6 @@ const EmployeeDocuments = () => {
         doc_url: uploadedFileData?.doc_url,
       };
 
-      // 3️⃣ Persist EmployeeDocument (NO FILE)
       if (editingDocument) {
         await updateDocument({
           id: editingDocument.id,
@@ -179,14 +178,15 @@ const EmployeeDocuments = () => {
   };
 
   const handleDelete = async (row) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this employee documents?",
-      )
-    )
+    if (!(await confirm({
+        title: "Delete this document?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deleteDocument(row.id).unwrap();
       toast.success("Employee Documents deleted successfully");
       refetch();
@@ -265,12 +265,11 @@ const EmployeeDocuments = () => {
             setPreviewType(null);
           }}
         >
-          {/* PDF */}
+
           {previewType === "pdf" && (
             <iframe src={previewUrl} className="w-full h-[80vh] border" />
           )}
 
-          {/* Images */}
           {["jpg", "jpeg", "png", "webp"].includes(previewType) && (
             <img
               src={previewUrl}
@@ -279,7 +278,6 @@ const EmployeeDocuments = () => {
             />
           )}
 
-          {/* Fallback */}
           {!["pdf", "jpg", "jpeg", "png", "webp"].includes(previewType) && (
             <div className="text-center text-muted-foreground">
               Preview not supported for this file type

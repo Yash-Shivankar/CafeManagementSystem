@@ -1,40 +1,69 @@
 /** @type {import('tailwindcss').Config} */
+
+const token = (name) => `rgb(var(--color-${name}) / <alpha-value>)`;
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: "rgb(var(--color-primary) / <alpha-value>)",
-        "primary-dark": "rgb(var(--color-primary-dark) / <alpha-value>)",
-        "primary-light": "rgb(var(--color-primary-light) / <alpha-value>)",
+        primary: token("primary"),
+        "primary-dark": token("primary-dark"),
+        "primary-light": token("primary-light"),
 
-        secondary: "rgb(var(--color-secondary) / <alpha-value>)",
-        "secondary-dark": "rgb(var(--color-secondary-dark) / <alpha-value>)",
-        "secondary-light": "rgb(var(--color-secondary-light) / <alpha-value>)",
+        secondary: token("secondary"),
+        "secondary-dark": token("secondary-dark"),
+        "secondary-light": token("secondary-light"),
 
-        accent: "rgb(var(--color-accent) / <alpha-value>)",
+        accent: token("accent"),
 
-        success: "rgb(var(--color-success) / <alpha-value>)",
-        warning: "rgb(var(--color-warning) / <alpha-value>)",
-        error: "rgb(var(--color-error) / <alpha-value>)",
-        info: "rgb(var(--color-info) / <alpha-value>)",
+        success: token("success"),
+        warning: token("warning"),
+        error: token("error"),
+        info: token("info"),
 
-        background: "rgb(var(--color-background) / <alpha-value>)",
-        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        background: token("background"),
+        surface: token("surface"),
 
-        text: "rgb(var(--color-text-primary) / <alpha-value>)",
-        "text-secondary": "rgb(var(--color-text-secondary) / <alpha-value>)",
+        text: token("text-primary"),
+        "text-secondary": token("text-secondary"),
 
-        border: "rgb(var(--color-border) / <alpha-value>)",
+        border: token("border"),
+
+        foreground: token("foreground"),
+        muted: token("muted"),
+        "muted-foreground": token("muted-foreground"),
+
+        "on-primary": token("on-primary"),
+        "on-secondary": token("on-secondary"),
+        "on-accent": token("on-accent"),
+        "on-success": token("on-success"),
+        "on-warning": token("on-warning"),
+        "on-error": token("on-error"),
+        "on-info": token("on-info"),
+
+        scrim: token("scrim"),
+        sheen: token("sheen"),
+        star: token("star"),
+        "star-empty": token("star-empty"),
+      },
+      borderRadius: {
+        DEFAULT: "var(--border-radius)",
+        md: "var(--border-radius)",
+        lg: "calc(var(--border-radius) * 1.5)",
+        xl: "calc(var(--border-radius) * 2)",
       },
       fontFamily: {
         sans: ["var(--font-base)"],
       },
+      transitionDuration: {
+        DEFAULT: "var(--transition-speed)",
+      },
       screens: {
-        sm: "640px", // phones
-        md: "768px", // tablets
-        lg: "1024px", // laptops
-        xl: "1280px", // desktops
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
         "2xl": "1536px",
       },
     },

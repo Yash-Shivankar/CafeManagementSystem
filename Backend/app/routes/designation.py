@@ -1,90 +1,63 @@
-# app/api/designations.py
+"""Designations endpoints.
+
+HTTP binding only: path, verb, response model. What happens next is
+DesignationService; how it is fetched is DesignationRepository.
+"""
+
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import or_
-from sqlalchemy.orm import Session
-from typing import List
-from app.crud.base import CRUDBase
-from app.models.Designation import Designation
+
+from app.controllers.designationController import DesignationController
 from app.schemas.designation import (
     DesignationCreate,
-    DesignationUpdate,
     DesignationOut,
+    DesignationUpdate,
     PaginatedDesignationOut,
 )
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from math import ceil
+from app.utils.pagination import PageParams, page_params
 
 router = APIRouter(prefix="/designations", tags=["Designations"])
-designation_crud = CRUDBase[Designation, DesignationCreate, DesignationUpdate](
-    Designation
-)
-
-
-@router.post("/", response_model=DesignationOut)
-def create_designation(
-    designation_in: DesignationCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    return designation_crud.create(db, obj_in=designation_in, current_user=current_user)
-
-
-@router.get("/{designation_id}", response_model=DesignationOut)
-def get_designation(designation_id: int, db: Session = Depends(get_db)):
-    return designation_crud.get(db, designation_id)
-
-
-# @router.get("/", response_model=List[DesignationOut])
-# def list_designations(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return designation_crud.get_multi(db, skip=skip, limit=limit)
 
 
 @router.get("/", response_model=PaginatedDesignationOut)
 def list_designations(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
     search: str | None = Query(None, min_length=1),
-    db: Session = Depends(get_db),
+    params: PageParams = Depends(page_params),
+    controller: DesignationController = Depends(),
 ):
-    skip = (page - 1) * limit
-
-    filters = []
-    if search:
-        filters.append(or_(Designation.designation_name.ilike(f"%{search}%")))
-
-    designations, total = designation_crud.get_multi_paginated(
-        db,
-        skip=skip,
-        limit=limit,
-        filters=filters,
+    return controller.list(
+        params,
+        search=search,
     )
-    total_pages = ceil(total / limit)
-    return {
-        "data": designations,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+
+
+@router.get("/{designation_id}", response_model=DesignationOut)
+def get_designation(
+    designation_id: int,
+    controller: DesignationController = Depends(),
+):
+    return controller.get(designation_id)
+
+
+@router.post("/", response_model=DesignationOut)
+def create_designation(
+    payload: DesignationCreate,
+    controller: DesignationController = Depends(),
+):
+    return controller.create(payload)
 
 
 @router.put("/{designation_id}", response_model=DesignationOut)
 def update_designation(
     designation_id: int,
-    designation_in: DesignationUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: DesignationUpdate,
+    controller: DesignationController = Depends(),
 ):
-    db_designation = designation_crud.get(db, designation_id)
-    return designation_crud.update(
-        db, db_designation, obj_in=designation_in, current_user=current_user
-    )
+    return controller.update(designation_id, payload)
 
 
 @router.delete("/{designation_id}", response_model=DesignationOut)
 def delete_designation(
     designation_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: DesignationController = Depends(),
 ):
-    return designation_crud.remove(db, designation_id, current_user=current_user)
+    return controller.delete(designation_id)

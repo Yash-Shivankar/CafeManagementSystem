@@ -1,102 +1,61 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from typing import List
+"""Increment History endpoints.
 
-from app.crud.base import CRUDBase
-from app.models.IncrementHistory import IncrementHistory
+HTTP binding only: path, verb, response model. What happens next is
+IncrementHistoryService; how it is fetched is IncrementHistoryRepository.
+"""
+
+from fastapi import APIRouter, Depends
+
+from app.controllers.incrementHistoryController import IncrementHistoryController
 from app.schemas.increment_history import (
     IncrementHistoryCreate,
-    IncrementHistoryUpdate,
     IncrementHistoryOut,
+    IncrementHistoryUpdate,
     PaginatedIncrementHistoryOut,
 )
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from math import ceil
+from app.utils.pagination import PageParams, page_params
 
-router = APIRouter(
-    prefix="/increment-histories",
-    tags=["Increment History"],
-)
-
-increment_crud = CRUDBase[
-    IncrementHistory,
-    IncrementHistoryCreate,
-    IncrementHistoryUpdate,
-](IncrementHistory)
+router = APIRouter(prefix="/increment-histories", tags=["Increment History"])
 
 
-@router.post("/", response_model=IncrementHistoryOut)
-def create_increment(
-    obj_in: IncrementHistoryCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+@router.get("/", response_model=PaginatedIncrementHistoryOut)
+def list_increments(
+    params: PageParams = Depends(page_params),
+    controller: IncrementHistoryController = Depends(),
 ):
-    return increment_crud.create(
-        db=db,
-        obj_in=obj_in,
-        current_user=current_user,
+    return controller.list(
+        params,
     )
 
 
 @router.get("/{increment_id}", response_model=IncrementHistoryOut)
 def get_increment(
     increment_id: int,
-    db: Session = Depends(get_db),
+    controller: IncrementHistoryController = Depends(),
 ):
-    return increment_crud.get(db, increment_id)
+    return controller.get(increment_id)
 
 
-# @router.get("/", response_model=List[IncrementHistoryOut])
-# def list_increments(
-#     skip: int = 0,
-#     limit: int = 100,
-#     db: Session = Depends(get_db),
-# ):
-#     return increment_crud.get_multi(db, skip=skip, limit=limit)
-
-
-@router.get("/", response_model=PaginatedIncrementHistoryOut)
-def list_increments(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db),
+@router.post("/", response_model=IncrementHistoryOut)
+def create_increment(
+    payload: IncrementHistoryCreate,
+    controller: IncrementHistoryController = Depends(),
 ):
-    skip = (page - 1) * limit
-    increments, total = increment_crud.get_multi_paginated(db, skip=skip, limit=limit)
-    total_pages = ceil(total / limit)
-    return {
-        "data": increments,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+    return controller.create(payload)
 
 
 @router.put("/{increment_id}", response_model=IncrementHistoryOut)
 def update_increment(
     increment_id: int,
-    obj_in: IncrementHistoryUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: IncrementHistoryUpdate,
+    controller: IncrementHistoryController = Depends(),
 ):
-    db_obj = increment_crud.get(db, increment_id)
-    return increment_crud.update(
-        db=db,
-        db_obj=db_obj,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
+    return controller.update(increment_id, payload)
 
 
 @router.delete("/{increment_id}", response_model=IncrementHistoryOut)
 def delete_increment(
     increment_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: IncrementHistoryController = Depends(),
 ):
-    return increment_crud.remove(
-        db=db,
-        id=increment_id,
-        current_user=current_user,
-    )
+    return controller.delete(increment_id)

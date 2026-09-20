@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, List
-
-from pydantic import BaseModel, Field
 from decimal import Decimal
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.schemas.inventory_category import InventoryCategoryOut
 
 
@@ -22,37 +22,34 @@ class InventoryItemCreate(InventoryItemBase):
 
 
 class InventoryItemUpdate(BaseModel):
-    name: Optional[str] = Field(default=None, min_length=2, max_length=100)
-    category_id: Optional[int] = None
+    name: str | None = Field(default=None, min_length=2, max_length=100)
+    category_id: int | None = None
 
-    quantity: Optional[int] = Field(default=None, ge=0)
-    min_quantity: Optional[int] = Field(default=None, ge=0)
+    quantity: int | None = Field(default=None, ge=0)
+    min_quantity: int | None = Field(default=None, ge=0)
 
-    cost_price: Optional[Decimal] = Field(default=None, gt=0)
-    selling_price: Optional[Decimal] = Field(default=None, gt=0)
+    cost_price: Decimal | None = Field(default=None, gt=0)
+    selling_price: Decimal | None = Field(default=None, gt=0)
 
 
 class InventoryItemOut(InventoryItemBase):
     id: int
     name: str = Field(..., min_length=2, max_length=100)
-    category: Optional[InventoryCategoryOut]
+    category: InventoryCategoryOut | None
     quantity: int = Field(default=0, ge=0)
     min_quantity: int = Field(default=0, ge=0)
     cost_price: Decimal = Field(..., gt=0)
     selling_price: Decimal = Field(..., gt=0)
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int]
-    updated_by: Optional[int]
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None
+    updated_by: int | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedInventoryItemOut(BaseModel):
-    data: List[InventoryItemOut]
+    data: list[InventoryItemOut]
     total: int
     totalPages: int
     currentPage: int

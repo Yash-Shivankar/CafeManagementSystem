@@ -1,103 +1,63 @@
+"""Tables endpoints.
+
+HTTP binding only: path, verb, response model. What happens next is
+TableService; how it is fetched is TableRepository.
+"""
+
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import cast, String, or_
-from sqlalchemy.orm import Session
-from typing import List
-from app.crud.base import CRUDBase
-from app.models.Table import Table
-from app.schemas.table import TableCreate, TableUpdate, TableOut, PaginatedTableOut
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from math import ceil
+
+from app.controllers.tableController import TableController
+from app.schemas.table import (
+    PaginatedTableOut,
+    TableCreate,
+    TableOut,
+    TableUpdate,
+)
+from app.utils.pagination import PageParams, page_params
 
 router = APIRouter(prefix="/tables", tags=["Tables"])
 
-table_crud = CRUDBase[Table, TableCreate, TableUpdate](Table)
 
-
-@router.post("/", response_model=TableOut)
-def create_table(
-    obj_in: TableCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+@router.get("/", response_model=PaginatedTableOut)
+def list_tables(
+    search: str | None = Query(None, min_length=1),
+    params: PageParams = Depends(page_params),
+    controller: TableController = Depends(),
 ):
-    return table_crud.create(
-        db=db,
-        obj_in=obj_in,
-        current_user=current_user,
+    return controller.list(
+        params,
+        search=search,
     )
 
 
 @router.get("/{table_id}", response_model=TableOut)
 def get_table(
     table_id: int,
-    db: Session = Depends(get_db),
+    controller: TableController = Depends(),
 ):
-    return table_crud.get(db, table_id)
+    return controller.get(table_id)
 
 
-# @router.get("/", response_model=List[TableOut])
-# def list_tables(
-#     skip: int = 0,
-#     limit: int = 100,
-#     db: Session = Depends(get_db),
-# ):
-#     return table_crud.get_multi(db, skip=skip, limit=limit)
-
-
-@router.get("/", response_model=PaginatedTableOut)
-def list_tables(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    search: str | None = Query(None, min_length=1),
-    db: Session = Depends(get_db),
+@router.post("/", response_model=TableOut)
+def create_table(
+    payload: TableCreate,
+    controller: TableController = Depends(),
 ):
-    skip = (page - 1) * limit
-
-    filters = []
-    if search:
-        filters.append(
-            or_(
-                Table.table_number.ilike(f"%{search}%"),
-                cast(Table.seating_capacity, String).ilike(f"%{search}%"),
-            )
-        )
-
-    tables, total = table_crud.get_multi_paginated(
-        db, skip=skip, limit=limit, filters=filters
-    )
-    total_pages = ceil(total / limit)
-    return {
-        "data": tables,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+    return controller.create(payload)
 
 
 @router.put("/{table_id}", response_model=TableOut)
 def update_table(
     table_id: int,
-    obj_in: TableUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: TableUpdate,
+    controller: TableController = Depends(),
 ):
-    db_obj = table_crud.get(db, table_id)
-    return table_crud.update(
-        db=db,
-        db_obj=db_obj,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
+    return controller.update(table_id, payload)
 
 
 @router.delete("/{table_id}", response_model=TableOut)
 def delete_table(
     table_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: TableController = Depends(),
 ):
-    return table_crud.remove(
-        db=db,
-        id=table_id,
-        current_user=current_user,
-    )
+    return controller.delete(table_id)

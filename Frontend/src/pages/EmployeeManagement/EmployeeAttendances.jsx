@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatTime } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -15,6 +17,7 @@ import {
 } from "../../app/allSlices";
 
 const EmployeeAttendances = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingAttendance, setEditingAttendance] = useState(null);
@@ -89,7 +92,7 @@ const EmployeeAttendances = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -114,37 +117,18 @@ const EmployeeAttendances = () => {
     {
       key: "date",
       label: "Date",
-      render: (value) => {
-        const date = new Date(value);
-        return date.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        });
-      },
+      render: (value) => formatDate(value),
     },
     { key: "session", label: "Session" },
     {
       key: "check_in",
       label: "CheckIn",
-      render: (value) =>
-        value
-          ? new Date(value).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "-",
+      render: (value) => formatTime(value),
     },
     {
       key: "check_out",
       label: "CheckOut",
-      render: (value) =>
-        value
-          ? new Date(value).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "-",
+      render: (value) => formatTime(value),
     },
     { key: "status", label: "Status" },
   ];
@@ -222,14 +206,15 @@ const EmployeeAttendances = () => {
   };
 
   const handleDelete = async (row) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this employee attendances?",
-      )
-    )
+    if (!(await confirm({
+        title: "Delete this attendance record?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deleteAttendance(row.id).unwrap();
       toast.success("Employee Attendances deleted successfully");
       refetch();

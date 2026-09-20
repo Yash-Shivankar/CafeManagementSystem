@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +16,7 @@ import {
 } from "../../app/allSlices";
 
 const Incentives = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingIncentive, setEditingIncentive] = useState(null);
@@ -43,17 +46,12 @@ const Incentives = () => {
     {
       key: "amount",
       label: "Amount",
-      render: (value) => `₹ ${Number(value).toFixed(2)}`,
+      render: (value) => formatMoney(value),
     },
     {
       key: "date_given",
       label: "Date",
-      render: (value) =>
-        new Date(value).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
+      render: (value) => formatDate(value),
     },
   ];
 
@@ -114,10 +112,15 @@ const Incentives = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this incentive?"))
+    if (!(await confirm({
+        title: "Delete this incentive?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deleteIncentive(row.id).unwrap();
       toast.success("Incentive deleted successfully");
       refetch();

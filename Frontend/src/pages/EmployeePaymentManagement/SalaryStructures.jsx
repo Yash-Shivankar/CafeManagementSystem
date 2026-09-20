@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +16,7 @@ import {
 } from "../../app/allSlices";
 
 const SalaryStructures = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingStructure, setEditingStructure] = useState(null);
@@ -38,13 +41,12 @@ const SalaryStructures = () => {
       render: (employee) =>
         `${employee?.user?.first_name ?? ""} ${employee?.user?.last_name ?? ""}`.trim(),
     },
-
     {
       key: "package_lpa",
       label: "Package (LPA)",
       render: (value) => {
         if (!value) return "-";
-        return `₹ ${Number(value).toFixed(2)} LPA`;
+        return `${formatMoney(value)} LPA`;
       },
     },
     {
@@ -52,19 +54,17 @@ const SalaryStructures = () => {
       label: "Monthly Salary",
       render: (value) => {
         if (!value) return "-";
-        return `₹ ${Number(value).toFixed(2)}`;
+        return formatMoney(value);
       },
     },
-
     { key: "pf_percentage", label: "PF (%)", render: (value) => `${value}%` },
     { key: "esi_percentage", label: "ESI (%)", render: (value) => `${value}%` },
-
     {
       key: "allowances",
       label: "Allowances",
       render: (value) => {
         if (!value) return "-";
-        return `₹ ${Number(value).toFixed(2)}`;
+        return formatMoney(value);
       },
     },
     {
@@ -72,7 +72,7 @@ const SalaryStructures = () => {
       label: "Deductions",
       render: (value) => {
         if (!value) return "-";
-        return `₹ ${Number(value).toFixed(2)}`;
+        return formatMoney(value);
       },
     },
   ];
@@ -144,10 +144,15 @@ const SalaryStructures = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this structure?"))
+    if (!(await confirm({
+        title: "Delete this salary structure?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deleteStructure(row.id).unwrap();
       toast.success("Structure deleted successfully");
       refetch();

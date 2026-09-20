@@ -1,17 +1,20 @@
 from sqlalchemy import (
     Column,
-    Integer,
-    Numeric,
     DateTime,
     ForeignKey,
+    Index,
+    Integer,
+    Numeric,
     func,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
 
 
 class IncrementHistory(Common):
     __tablename__ = "increment_history"
+    __table_args__ = (Index("ix_increment_history_is_deleted", "is_deleted"),)
 
     id = Column(Integer, primary_key=True, index=True)
 
@@ -28,7 +31,7 @@ class IncrementHistory(Common):
         nullable=False,
     )
 
-    increment_date = Column(DateTime, server_default=func.now())
+    increment_date = Column(DateTime(timezone=True), server_default=func.now())
 
     employee = relationship(
         "EmployeeDetails",

@@ -1,38 +1,36 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import ThemeSwitcher from "../components/ThemeSwitcher";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useLoginMutation } from "../app/allSlices";
 import { authService } from "../services/auth";
+import Button from "../components/Button";
+
+import logoWebp from "../assets/logo-512.webp";
+import logoPng from "../assets/logo-512.png";
 
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
 const isMobile = (value) => /^[6-9]\d{9}$/.test(value);
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [login, { isLoading, isSuccess, error }] = useLoginMutation();
 
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-  });
+  const destination = location.state?.from?.pathname || "/";
 
+  const [form, setForm] = useState({ username: "", password: "" });
   const [inputError, setInputError] = useState("");
 
   useEffect(() => {
-    if (isSuccess) navigate("/");
-  }, [isSuccess, navigate]);
+    if (isSuccess) navigate(destination, { replace: true });
+  }, [isSuccess, navigate, destination]);
 
   const handleUsernameChange = (value) => {
-    setForm({ ...form, username: value });
+    setForm((prev) => ({ ...prev, username: value }));
 
     if (!value) {
       setInputError("");
-      return;
-    }
-
-    if (!isEmail(value) && !isMobile(value)) {
-      setInputError("Enter valid email or mobile number");
+    } else if (!isEmail(value) && !isMobile(value)) {
+      setInputError("Enter a valid email address or 10-digit mobile number");
     } else {
       setInputError("");
     }
@@ -42,12 +40,12 @@ const Login = () => {
     e.preventDefault();
 
     if (!form.username || !form.password) {
-      setInputError("All fields are required");
+      setInputError("Enter your email or mobile number and your password");
       return;
     }
 
     if (!isEmail(form.username) && !isMobile(form.username)) {
-      setInputError("Enter valid email or mobile number");
+      setInputError("Enter a valid email address or 10-digit mobile number");
       return;
     }
 
@@ -59,91 +57,101 @@ const Login = () => {
 
     try {
       const response = await login(payload).unwrap();
-
       authService.setAuth(response);
-      navigate("/");
-    } catch (err) {
-      console.error("Login failed:", err);
+      navigate(destination, { replace: true });
+    } catch {
     }
   };
 
+  const inputClass =
+    "w-full rounded-md border border-border bg-background px-4 py-2 " +
+    "text-foreground placeholder:text-muted-foreground";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-text">
-      <div
-        className="
-  w-full max-w-md p-8 rounded-2xl
-  bg-[rgba(255,255,255,0.08)]
-  backdrop-blur-xl
-  border border-white/10
-  shadow-[0_20px_50px_rgba(0,0,0,0.35)]
-"
-      >
-        {/* <div className="flex justify-center mb-6">
-          <h2 className="text-2xl font-bold">Login</h2>
-        </div> */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-3xl">🔐</span>
-            <h2 className="text-3xl font-extrabold tracking-wide">
-              Welcome Back
-            </h2>
-          </div>
-          <p className="text-sm text-text/70">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md rounded-xl border border-border bg-surface p-8 shadow-lg">
+        <div className="mb-8 text-center">
+          <picture>
+            <source srcSet={logoWebp} type="image/webp" />
+            <img
+              src={logoPng}
+              alt=""
+              width={48}
+              height={48}
+              className="mx-auto mb-4 h-12 w-12 object-contain"
+            />
+          </picture>
+          <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Sign in to continue to your dashboard
           </p>
         </div>
 
-        <form onSubmit={submit} className="space-y-4">
-          <input
-            className="w-full px-4 py-2 rounded bg-background border"
-            placeholder="Email or Mobile Number"
-            value={form.username}
-            onChange={(e) => handleUsernameChange(e.target.value)}
-          />
+        <form onSubmit={submit} className="space-y-4" noValidate>
+          <div className="space-y-1">
+            <label
+              htmlFor="login-username"
+              className="block text-sm font-medium text-foreground"
+            >
+              Email or mobile number
+            </label>
+            <input
+              id="login-username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              aria-invalid={inputError ? true : undefined}
+              aria-describedby={inputError ? "login-error" : undefined}
+              className={inputClass}
+              placeholder="you@cafe.com or 9876543210"
+              value={form.username}
+              onChange={(e) => handleUsernameChange(e.target.value)}
+            />
+          </div>
 
-          {inputError && <p className="text-red-500 text-sm">{inputError}</p>}
+          <div className="space-y-1">
+            <label
+              htmlFor="login-password"
+              className="block text-sm font-medium text-foreground"
+            >
+              Password
+            </label>
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              className={inputClass}
+              value={form.password}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, password: e.target.value }))
+              }
+            />
+          </div>
 
-          <input
-            type="password"
-            className="w-full px-4 py-2 rounded bg-background border"
-            placeholder="Password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
+          <div id="login-error" role="alert" aria-live="polite">
+            {(inputError || error) && (
+              <p className="text-sm text-error">
+                {inputError ||
+                  error?.data?.detail ||
+                  "Sign-in failed. Check your details and try again."}
+              </p>
+            )}
+          </div>
 
-          {/* <button
-            disabled={isLoading || inputError}
-            className="w-full bg-primary text-white py-2 rounded disabled:opacity-50"
-          >
-            {isLoading ? "Logging in..." : "Login"}
-          </button> */}
-          <button
+          <Button
             type="submit"
-            disabled={isLoading || inputError}
-            className="
-    w-full py-3 rounded-xl font-semibold
-    bg-primary
-    text-white
-    relative z-10
-    shadow-xl
-    hover:brightness-110
-    transition
-    disabled:opacity-50 disabled:cursor-not-allowed
-  "
-          >
-            {isLoading ? "Logging in..." : "Login"}
-          </button>
-
-          {error && (
-            <p className="text-red-500 text-sm">
-              {error?.data?.message || "Login failed"}
-            </p>
-          )}
+            label={isLoading ? "Signing in…" : "Sign in"}
+            loading={isLoading}
+            disabled={Boolean(inputError)}
+            className="w-full"
+            size="lg"
+          />
         </form>
 
-        <p className="text-sm text-center mt-4">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           No account?{" "}
-          <Link to="/register" className="text-primary font-semibold">
+          <Link to="/register" className="font-semibold text-primary">
             Register
           </Link>
         </p>

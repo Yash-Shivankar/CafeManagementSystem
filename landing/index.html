@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Caelum — food cost, labour cost, one system | POS for independent cafes in India</title>
+<meta name="description" content="Every cafe POS in India tracks what you buy. Caelum also runs who you pay — shifts, attendance, PF &amp; ESI, incentives and salary slips. ₹1,999 per outlet per month, everything included, no lock-in.">
+<link rel="canonical" href="https://caelum.cafe/">
+
+<meta name="theme-color" content="#0E4433" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B3427" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caelum">
+<meta property="og:title" content="Food cost. Labour cost. One system.">
+<meta property="og:description" content="The cafe POS that also runs your staff — attendance, PF &amp; ESI, incentives, salary slips. ₹1,999 per outlet per month, everything included.">
+<meta property="og:url" content="https://caelum.cafe/">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Food cost. Labour cost. One system.">
+<meta name="twitter:description" content="The cafe POS that also runs your staff. ₹1,999 per outlet per month, everything included.">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+
+<!--
+  Fonts load without blocking the first paint. BRAND.md names the reading
+  device: "a mid-range Android in daylight". A render-blocking stylesheet on a
+  marketing page costs the visit you were trying to earn, so the page paints in
+  its fallback stack and swaps when the faces arrive.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<noscript>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</noscript>
+
+<style>
+
+:root{
+  --ground:#F2F5F1; --surface:#FFFFFF; --sunk:#E8EDE6;
+  --ink:#0F1712; --ink-soft:#3D4A43; --muted:#65746B;
+  --line:#D9E0D7; --line-strong:#C1CCBE;
+  --forest:#0E4433; --forest-2:#0A3527; --forest-ink:#EFF6F0; --forest-dim:#9DBCAC; --forest-line:#1E5B46;
+  --leaf:#1C7A54; --leaf-soft:#DEF0E7;
+  --saffron:#A85F10; --saffron-soft:#F8EEDE;
+
+  --display:"Bricolage Grotesque","Trebuchet MS",Verdana,sans-serif;
+  --body:"Public Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --gut:clamp(18px,5vw,64px);
+  --maxw:1120px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0A0F0C; --surface:#121A15; --sunk:#18211B;
+    --ink:#EBF1E9; --ink-soft:#BCC9C1; --muted:#8B978F;
+    --line:#233028; --line-strong:#33443A;
+    --forest:#0B3427; --forest-2:#07261C; --forest-ink:#EAF3EC; --forest-dim:#8FB2A1; --forest-line:#17513C;
+    --leaf:#4FBE8C; --leaf-soft:#122A20;
+    --saffron:#DFA45E; --saffron-soft:#2A2013;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0A0F0C; --surface:#121A15; --sunk:#18211B;
+  --ink:#EBF1E9; --ink-soft:#BCC9C1; --muted:#8B978F;
+  --line:#233028; --line-strong:#33443A;
+  --forest:#0B3427; --forest-2:#07261C; --forest-ink:#EAF3EC; --forest-dim:#8FB2A1; --forest-line:#17513C;
+  --leaf:#4FBE8C; --leaf-soft:#122A20;
+  --saffron:#DFA45E; --saffron-soft:#2A2013;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--body);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gut)}
+
+h1,h2,h3,.wordmark{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.022em}
+h1{font-size:clamp(2.35rem,6.2vw,4.15rem);line-height:1.01;font-weight:800;letter-spacing:-.035em}
+h2{font-size:clamp(1.75rem,4.1vw,2.6rem);line-height:1.08;letter-spacing:-.028em}
+h3{font-size:1.1rem;line-height:1.25;letter-spacing:-.012em;font-weight:700}
+p{margin:0 0 1em}
+a{color:inherit}
+strong{font-weight:600}
+.mono,code{font-family:var(--mono);font-size:.85em}
+.eyebrow{
+  font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--muted);display:block;
+}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- nav ---------- */
+.nav{border-bottom:1px solid var(--line);background:var(--ground);position:relative;z-index:3}
+.nav .wrap{display:flex;align-items:center;gap:20px;padding-block:15px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand svg{display:block;flex:none}
+.wordmark{font-size:1.3rem;letter-spacing:-.03em;line-height:1}
+.wordmark em{font-style:normal;color:var(--muted);font-weight:500;font-size:.72em;letter-spacing:.01em}
+.navlinks{display:flex;gap:22px;font-size:.92rem;color:var(--ink-soft)}
+.navlinks a{text-decoration:none}
+.navlinks a:hover{color:var(--leaf)}
+@media(max-width:720px){.navlinks{display:none}}
+
+.signin{
+  font-size:.92rem;font-weight:600;color:var(--ink-soft);text-decoration:none;
+  padding:11px 4px;
+}
+.signin:hover{color:var(--leaf)}
+
+.btn{
+  display:inline-block;font-family:var(--body);font-weight:600;font-size:.95rem;
+  padding:11px 20px;border:1px solid transparent;cursor:pointer;text-decoration:none;
+  background:var(--leaf);color:#fff;transition:filter .15s ease;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn.ghost:hover{border-color:var(--leaf);color:var(--leaf);filter:none}
+.btn.onforest{background:#F4FAF5;color:var(--forest-2)}
+.btn.onforest.ghost{background:transparent;color:var(--forest-ink);border-color:var(--forest-line)}
+.btn.onforest.ghost:hover{border-color:var(--forest-ink);color:#fff}
+:focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+
+/* ---------- hero ---------- */
+.hero{background:var(--forest);color:var(--forest-ink);position:relative;overflow:hidden}
+.hero .wrap{padding-block:clamp(44px,7vw,86px) 0}
+.hero .lede{max-width:20ch}
+.hero h1{color:#fff}
+.hero .sub{
+  font-size:clamp(1.02rem,2.1vw,1.2rem);color:var(--forest-dim);
+  max-width:56ch;margin-top:20px;
+}
+.hero .sub b{color:#fff;font-weight:600}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.hero .fine{font-size:.85rem;color:var(--forest-dim);margin-top:14px}
+
+.tape{
+  display:flex;flex-wrap:wrap;gap:0;margin-top:clamp(36px,5vw,56px);
+  border-top:1px solid var(--forest-line);
+}
+.tape div{
+  flex:1 1 180px;padding:18px 20px 20px;border-right:1px solid var(--forest-line);
+}
+.tape div:last-child{border-right:0}
+.tape .k{
+  font-family:var(--display);font-size:clamp(1.5rem,3vw,1.95rem);font-weight:700;
+  color:#fff;display:block;line-height:1;letter-spacing:-.03em;
+}
+.tape .v{font-size:.86rem;color:var(--forest-dim);display:block;margin-top:7px;line-height:1.4}
+
+/* ---------- status banner ---------- */
+.status{background:var(--saffron-soft);border-bottom:1px solid var(--line)}
+.status .wrap{
+  display:flex;gap:16px 28px;align-items:baseline;flex-wrap:wrap;padding-block:14px;
+  font-size:.92rem;color:var(--ink-soft);
+}
+.status b{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--saffron)}
+
+/* ---------- generic section ---------- */
+section{padding-block:clamp(48px,7vw,92px)}
+section.tight{padding-block:clamp(36px,5vw,64px)}
+.head{max-width:62ch;margin-bottom:clamp(26px,4vw,40px)}
+.head h2{margin-block:10px 14px}
+.head p{color:var(--ink-soft);font-size:1.04rem;margin:0}
+
+/* ---------- cost ledger ---------- */
+.cost{border:1px solid var(--line);background:var(--surface)}
+.cost .row{padding:20px clamp(18px,3vw,28px);border-bottom:1px solid var(--line)}
+.cost .row:last-child{border-bottom:0}
+.cost .top{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:11px}
+.cost .who{font-family:var(--display);font-weight:700;font-size:1.08rem}
+.cost .amt{font-family:var(--mono);font-weight:600;font-size:1.02rem}
+.cost .track{height:26px;background:var(--sunk);position:relative;overflow:hidden}
+.cost .fill{height:100%;background:var(--line-strong)}
+.cost .fill.ours{background:var(--leaf)}
+.cost .note{font-size:.88rem;color:var(--muted);margin:9px 0 0}
+.cost .foot{
+  padding:14px clamp(18px,3vw,28px);background:var(--sunk);font-size:.85rem;color:var(--muted);
+  border-top:1px solid var(--line);
+}
+
+/* ---------- two halves ---------- */
+.halves{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.half{background:var(--surface);padding:clamp(22px,3vw,32px)}
+.half .tag{
+  display:inline-block;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:4px 9px;margin-bottom:14px;
+}
+.tag.live{background:var(--leaf-soft);color:var(--leaf)}
+.tag.soon{background:var(--saffron-soft);color:var(--saffron)}
+.half h3{font-size:1.35rem;margin-bottom:8px}
+.half>p{color:var(--ink-soft);font-size:.98rem;max-width:44ch}
+.half ul{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:0}
+.half li{
+  display:grid;grid-template-columns:20px 1fr;gap:11px;align-items:start;
+  padding:10px 0;border-top:1px solid var(--line);font-size:.95rem;
+}
+.half li svg{margin-top:4px}
+.half li span{color:var(--ink-soft)}
+.half li b{color:var(--ink);font-weight:600}
+
+/* ---------- leak ---------- */
+.leak{background:var(--forest);color:var(--forest-ink)}
+.leak h2{color:#fff}
+.leak .head p{color:var(--forest-dim)}
+.chain{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--forest-line);border:1px solid var(--forest-line)}
+.chain .cell{background:var(--forest);padding:20px 20px 22px}
+.chain .step{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;color:var(--forest-dim);display:block;margin-bottom:9px}
+.chain .cell b{font-family:var(--display);font-size:1.05rem;display:block;margin-bottom:5px;color:#fff;letter-spacing:-.015em}
+.chain .cell span{font-size:.9rem;color:var(--forest-dim);line-height:1.45}
+.leak .payoff{
+  margin-top:26px;border-left:3px solid #fff;padding:4px 0 4px 18px;
+  font-size:clamp(1.05rem,2.2vw,1.28rem);font-family:var(--display);font-weight:500;
+  color:#fff;max-width:52ch;letter-spacing:-.015em;line-height:1.35;
+}
+
+/* The margin chain describes work that is not shipped yet, and it is the most
+   persuasive block on the page — which is exactly why it has to say so.
+   BRAND.md: every claim marked live or next, and both have to be true. */
+.leak .chain-status{
+  display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;
+  font-size:.92rem;color:var(--forest-dim);max-width:64ch;margin:16px 0 0;
+}
+.leak .chain-status .tag{
+  flex:none;background:transparent;border:1px solid var(--saffron);color:var(--saffron);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 9px;margin:0;
+}
+
+.leak .chain-status{
+  display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;
+  font-size:.92rem;color:var(--forest-dim);max-width:64ch;margin:16px 0 0;
+}
+.leak .chain-status .tag{
+  flex:none;background:transparent;border:1px solid var(--saffron);color:var(--saffron);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:4px 9px;margin:0;
+}
+
+/* ---------- pricing ---------- */
+.price{
+  display:grid;grid-template-columns:minmax(280px,1fr) minmax(280px,1.25fr);
+  border:1px solid var(--ink);background:var(--surface);
+}
+.price .a{padding:clamp(26px,4vw,40px);border-right:1px solid var(--line)}
+.price .b{padding:clamp(26px,4vw,40px);background:var(--sunk)}
+.price .figure{display:flex;align-items:baseline;gap:7px;margin-block:6px 4px}
+.price .rs{font-family:var(--display);font-size:clamp(2.6rem,6vw,3.6rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.price .per{font-size:.98rem;color:var(--muted)}
+.price .gst{font-size:.86rem;color:var(--muted);margin-bottom:20px}
+.price .a>p{font-size:.97rem;color:var(--ink-soft)}
+.price ul{list-style:none;margin:0;padding:0}
+.price li{display:grid;grid-template-columns:20px 1fr;gap:11px;padding:8px 0;font-size:.95rem;color:var(--ink-soft)}
+.price li svg{margin-top:4px}
+.price h3{margin-bottom:14px}
+@media(max-width:760px){.price{grid-template-columns:1fr}.price .a{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* ---------- roadmap ---------- */
+.road{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.road .r{background:var(--surface);display:grid;grid-template-columns:minmax(120px,150px) 1fr;gap:0}
+.road .r>div{padding:16px clamp(16px,2.5vw,22px)}
+.road .when{background:var(--sunk);border-right:1px solid var(--line)}
+.road .when span{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.road .when b{display:block;font-family:var(--display);font-size:1rem;margin-top:3px;letter-spacing:-.015em}
+.road .what b{display:block;font-family:var(--display);font-size:1.04rem;margin-bottom:3px;letter-spacing:-.015em}
+.road .what span{font-size:.94rem;color:var(--ink-soft)}
+.road .r.now .when{background:var(--leaf-soft)}
+.road .r.now .when span,.road .r.now .when b{color:var(--leaf)}
+@media(max-width:620px){.road .r{grid-template-columns:1fr}.road .when{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* ---------- signup ---------- */
+.signup{background:var(--sunk);border:1px solid var(--line-strong)}
+.signup .inner{display:grid;grid-template-columns:1fr minmax(280px,420px);gap:clamp(24px,4vw,44px);padding:clamp(26px,4vw,44px)}
+@media(max-width:800px){.signup .inner{grid-template-columns:1fr}}
+.signup h2{margin-bottom:12px}
+.signup .blurb{color:var(--ink-soft);font-size:1rem;max-width:46ch;margin:0}
+form{display:flex;flex-direction:column;gap:12px}
+label{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+input,select{
+  width:100%;font-family:var(--body);font-size:1rem;padding:11px 13px;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:0;
+}
+input::placeholder{color:var(--muted)}
+input:focus,select:focus{outline:2px solid var(--leaf);outline-offset:-1px;border-color:var(--leaf)}
+form .btn{width:100%;padding:13px}
+.formnote{font-size:.82rem;color:var(--muted);margin:0}
+.done{
+  background:var(--leaf-soft);border:1px solid var(--leaf);padding:22px;
+  font-size:.98rem;color:var(--ink-soft);
+}
+.done b{font-family:var(--display);font-size:1.15rem;color:var(--ink);display:block;margin-bottom:6px}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding-block:30px 40px;font-size:.88rem;color:var(--muted)}
+footer .cols{display:flex;flex-wrap:wrap;gap:18px 48px;justify-content:space-between;align-items:flex-start}
+footer p{margin:0 0 .5em;max-width:60ch}
+footer a{color:var(--muted)}
+.tear{
+  height:1px;background:repeating-linear-gradient(90deg,var(--line-strong) 0 7px,transparent 7px 14px);
+  margin-block:26px;
+}
+
+/* ---------- added when the mockup became a real page ---------- */
+
+/* Keyboard users land here first; it is the only thing above the nav. */
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:10;
+  background:var(--leaf);color:#fff;padding:10px 16px;font-weight:600;
+}
+.skip:focus{left:0}
+
+/* The page has one long-scroll layout and in-page nav links. */
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+:target{scroll-margin-top:24px}
+
+/* Images are not used yet, but a marketing page grows them. */
+img{max-width:100%;height:auto}
+</style>
+</head>
+<body>
+<a class="skip" href="#product">Skip to what it does</a>
+
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="currentColor" stroke-width="2.4" style="color:var(--leaf)"/>
+        <path d="M12 7 h9 l5 17 -9.5 0 z" fill="var(--leaf)"/>
+        <path d="M12 29 h16" stroke="var(--leaf)" stroke-width="2.6" stroke-linecap="square"/>
+      </svg>
+      <span class="wordmark">Caelum <em>for cafes</em></span>
+    </div>
+    <div class="navlinks">
+      <a href="#cost">Cost</a>
+      <a href="#product">What it does</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+    <a class="signin" href="/app/login">Sign in</a>
+    <a class="btn" href="#join">Join founding cafes</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="lede">
+      <h1>Food cost. Labour cost. One system.</h1>
+    </div>
+    <p class="sub">Every cafe POS in India tracks what you buy. <b>Caelum also runs who you pay</b> — shifts, attendance, PF&nbsp;&amp; ESI, incentives, salary slips — because labour is the other half of your margin, and right now it lives in a notebook.</p>
+    <div class="cta-row">
+      <a class="btn onforest" href="#join">Join the founding cafes</a>
+      <a class="btn onforest ghost" href="#product">See what's built</a>
+    </div>
+    <p class="fine">Built in India, for independent cafes. No annual lock-in, no setup fee, no add-on menu.</p>
+
+    <div class="tape">
+      <div><span class="k">2</span><span class="v">costs a cafe actually controls — stock and staff</span></div>
+      <div><span class="k">1</span><span class="v">price, everything included, billed monthly</span></div>
+      <div><span class="k num">₹23,988</span><span class="v">your first year, all in</span></div>
+      <div><span class="k">0</span><span class="v">sales calls needed to see the price</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="status">
+  <div class="wrap">
+    <b>Early access</b>
+    <span>Billing, KOT, staff and inventory all run today; recipes, COGS and offline billing are next. Everything on this page is marked <strong>live</strong> or <strong>next</strong> — we don't sell screenshots of things that don't exist.</span>
+  </div>
+</div>
+
+<section id="cost">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">What it costs to say yes</span>
+      <h2>The price is on the page. That is the whole pitch.</h2>
+      <p>Ask an incumbent what their software costs and you get a demo booking. Here is the honest comparison for one outlet, first year, drawn to scale.</p>
+    </div>
+
+    <div class="cost">
+      <div class="row">
+        <div class="top">
+          <span class="who">Typical incumbent POS</span>
+          <span class="amt num">₹1,50,000 – ₹2,30,000</span>
+        </div>
+        <div class="track"><div class="fill" style="width:100%"></div></div>
+        <p class="note">Subscription ₹3,000–12,000/month, plus ₹5,000–15,000 setup, plus per-module add-ons — loyalty ₹1,000–2,500/mo, online ordering ₹1,500–3,000/mo, WhatsApp ₹500–1,500/mo, aggregator link-up ₹2,000–5,000 one-time. Renewals reported rising 10–20% a year.</p>
+      </div>
+      <div class="row">
+        <div class="top">
+          <span class="who">Caelum</span>
+          <span class="amt num" style="color:var(--leaf)">₹23,988</span>
+        </div>
+        <div class="track"><div class="fill ours" style="width:13%"></div></div>
+        <p class="note">₹1,999 a month, one plan, every module included. No setup fee. Month to month — leave whenever you like and take your data with you.</p>
+      </div>
+      <p class="foot">Incumbent figures are published market ranges for Indian restaurant POS in 2026, not a quote for any one vendor; both columns exclude 18% GST, and hardware is separate either way. Use your own quote — the point is that you had to ask for theirs.</p>
+    </div>
+  </div>
+</section>
+
+<section id="product" class="tight">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Two halves of one shift</span>
+      <h2>The counter, and the crew behind it.</h2>
+      <p>A cafe is a room where stock turns into sales and people turn into wages. Software that only watches the first half can tell you what sold, never what it cost you to sell it.</p>
+    </div>
+
+    <div class="halves">
+      <div class="half">
+        <span class="tag live">Live today</span>
+        <h3>The counter</h3>
+        <p>Billing that keeps up with the 8:40 rush, and a kitchen that hears the order without anyone shouting.</p>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Menu</b> — price, GST slab, HSN, veg flag and availability, per item</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Orders and KOT</b> — dine-in, takeaway and delivery; a kitchen screen that sorts by who has waited longest</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>GST-correct bills</b> — line items, CGST/SGST per slab, discount applied before tax, service charge, round-off</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Part payment and voids</b> — cash, UPI or card, and nothing is cancelled without a reason against a name</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Day close</b> — revenue read from the payments actually taken, never typed in</span></li>
+        </ul>
+      </div>
+
+      <div class="half">
+        <span class="tag live">Live today</span>
+        <h3>The crew</h3>
+        <p>The part every other cafe POS leaves in a WhatsApp group and a paper register.</p>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Split-shift attendance</b> — two sessions a day, check-in and check-out, the way a cafe actually staffs</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Salary structure with PF &amp; ESI</b> — package, monthly, allowances, deductions, held per employee</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Incentives and increments</b> — daily, monthly, annual or performance, with the history behind each raise</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Documents on file</b> — the paperwork you scramble for at inspection, filed against the person</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Performance reviews</b> — so a raise is a record, not an argument</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="leak">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow" style="color:var(--forest-dim)">Where the margin goes</span>
+      <h2>You know what sold. Do you know what it cost?</h2>
+      <p>Most cafes price a cappuccino once, in year one, and never touch it again — while milk, beans and wages all move. The chain below is the whole point of putting stock and staff in one system.</p>
+      <p class="chain-status"><span class="tag soon">Next — Q4 2026</span> Steps 01 and 02 are what we are building now. The two halves this chain joins — every sale, and every hour worked — are already recorded, which is the hard part and the reason we can do this at all.</p>
+      <p class="chain-status"><span class="tag soon">Next — Q4 2026</span> Steps 01 and 02 are what we are building now. The two halves this chain joins — every sale, and every hour worked — are already recorded, which is the hard part and the reason we can do this at all.</p>
+    </div>
+
+    <div class="chain">
+      <div class="cell"><span class="step">01</span><b>Recipe</b><span>Each menu item knows what goes into it, down to the gram.</span></div>
+      <div class="cell"><span class="step">02</span><b>Sale</b><span>A bill line depletes those ingredients automatically. No stock-taking evening.</span></div>
+      <div class="cell"><span class="step">03</span><b>Variance</b><span>What the recipe says you used versus what the shelf says. That gap is wastage or theft.</span></div>
+      <div class="cell"><span class="step">04</span><b>True margin</b><span>Ingredient cost plus the labour hours that shift, against the price on the board.</span></div>
+    </div>
+
+    <p class="payoff">The end of that chain is one sentence you can act on: <em>this drink makes money, this one does not, and here is by how much.</em></p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Pricing</span>
+      <h2>One plan. Everything in it.</h2>
+      <p>No starter tier that's missing the thing you needed. No module you discover is extra after you've signed.</p>
+    </div>
+
+    <div class="price">
+      <div class="a">
+        <span class="eyebrow">Per outlet</span>
+        <div class="figure">
+          <span class="rs num">₹1,999</span>
+          <span class="per">/ month</span>
+        </div>
+        <p class="gst">plus 18% GST · billed monthly · cancel any month</p>
+        <p>That is <strong class="num">₹23,988</strong> a year against a market where the first year commonly runs <strong class="num">₹1.5–2.3 lakh</strong> once setup and add-ons land. You are not being charged less for less — you are being charged once.</p>
+        <div class="tear"></div>
+        <p style="font-size:.93rem;color:var(--muted);margin:0">Second outlet onward: ₹1,499 each. Your data is yours — full export, any time, no exit fee.</p>
+      </div>
+      <div class="b">
+        <h3>Included, not extra</h3>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Billing, KOT and day close</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Inventory, movement ledger and low-stock</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Staff, attendance and payroll with PF &amp; ESI</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Customers, feedback and invoice history</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Every report and export, as they ship</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Setup, migration and training</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Every feature added while you're a customer</span></li>
+        </ul>
+        <p style="font-size:.88rem;color:var(--muted);margin:18px 0 0">Runs on the tablet and printer you already own. We don't sell hardware, so we have no reason to make you buy ours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap" class="tight">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Roadmap</span>
+      <h2>What's done, what's next, in order.</h2>
+      <p>Founding cafes get this list before they get an invoice. If something you need is three rows down, tell us and it moves.</p>
+    </div>
+
+    <div class="road">
+      <div class="r now">
+        <div class="when"><span>Shipping</span><b>Now</b></div>
+        <div class="what"><b>The counter, and the crew</b><span>Menu, orders, KOT and a kitchen screen. GST-correct billing with CGST/SGST per slab, discount before tax, service charge and round-off. Part payment by cash, UPI or card. Split-shift attendance, documents, performance, salary structure with PF &amp; ESI, incentives and increments. Inventory with a movement ledger and low-stock. Multi-outlet throughout.</span></div>
+      </div>
+      <div class="r">
+        <div class="when"><span>Next</span><b>Q4 2026</b></div>
+        <div class="what"><b>Recipes, COGS and reports</b><span>Menu items linked to ingredients, so a sale depletes stock and margin is computed per item. Daily sales, item-wise, hourly and staff-wise — as CSV and PDF.</span></div>
+      </div>
+      <div class="r">
+        <div class="when"><span>Then</span><b>Q1 2027</b></div>
+        <div class="what"><b>Offline billing and split bills</b><span>Billing that keeps working when the internet doesn't, and a table that can settle across four cards without four bills.</span></div>
+      </div>
+      <div class="r">
+        <div class="when"><span>Then</span><b>Q2 2027</b></div>
+        <div class="what"><b>Aggregators and hardware</b><span>Zomato and Swiggy orders in the same queue as dine-in. Thermal printer, cash drawer and a wall-mounted kitchen display.</span></div>
+      </div>
+      <div class="r">
+        <div class="when"><span>Later</span><b>2027</b></div>
+        <div class="what"><b>Loyalty and e-invoicing</b><span>Repeat-customer history and rewards, and e-invoice readiness above the turnover threshold.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="join" class="tight">
+  <div class="wrap">
+    <div class="signup">
+      <div class="inner">
+        <div>
+          <span class="eyebrow">Founding cafes</span>
+          <h2>Twenty cafes. Then we close it.</h2>
+          <p class="blurb">Founding cafes help shape what gets built next, get the launch price locked for as long as they stay, and get a real person on the phone rather than a ticket number. In exchange we ask for honest feedback and the occasional bad review to our face.</p>
+          <div class="tear"></div>
+          <p style="font-size:.92rem;color:var(--muted);margin:0">Prefer to talk first? Write to <a href="#join" style="color:var(--leaf)">hello@caelum.cafe</a> and we'll call you between rushes.</p>
+        </div>
+
+        <div>
+          <form id="joinform" novalidate>
+            <div>
+              <label for="cafe">Cafe name</label>
+              <input id="cafe" name="cafe" type="text" placeholder="Third Wave, Koramangala" autocomplete="organization">
+            </div>
+            <div>
+              <label for="city">City</label>
+              <input id="city" name="city" type="text" placeholder="Bengaluru" autocomplete="address-level2">
+            </div>
+            <div>
+              <label for="seats">Seats</label>
+              <select id="seats" name="seats">
+                <option>Under 20</option>
+                <option selected>20 – 40</option>
+                <option>40 – 80</option>
+                <option>More than 80</option>
+              </select>
+            </div>
+            <div>
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" placeholder="98XXXXXXXX" autocomplete="tel">
+            </div>
+            <button class="btn" type="submit">Request early access</button>
+            <p class="formnote">No card, no commitment. We'll reply within two working days.</p>
+            <p class="formnote" id="formerror" role="alert" hidden></p>
+          </form>
+          <div class="done" id="joindone" hidden>
+            <b>Thanks — you're on the list.</b>
+            We'll be in touch within two working days with a date for your walkthrough. If it's urgent, call and we'll pick up.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="brand" style="margin-bottom:10px">
+          <svg width="24" height="24" viewBox="0 0 40 40" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="var(--leaf)" stroke-width="2.4"/>
+            <path d="M12 7 h9 l5 17 -9.5 0 z" fill="var(--leaf)"/>
+            <path d="M12 29 h16" stroke="var(--leaf)" stroke-width="2.6" stroke-linecap="square"/>
+          </svg>
+          <span class="wordmark" style="font-size:1.05rem">Caelum</span>
+        </div>
+        <p><em>Caelum</em> — the engraver's chisel. A small, sharp instrument in the hands of someone who makes things. Built in India for independent cafes.</p>
+      </div>
+      <div>
+        <p style="max-width:42ch">Figures quoted for incumbent POS are published 2026 market ranges, not a quote from any named vendor. Pricing here is our published price and includes no hidden module.</p>
+        <p style="max-width:42ch"><a href="/app/login">Sign in</a> · <a href="#join">Request early access</a> · <a href="mailto:hello@caelum.cafe">hello@caelum.cafe</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * Where the early-access form posts.
+   *
+   * Left empty on purpose. An unconfigured form that quietly pretends to
+   * succeed is worse than one that says it is not wired up — the first loses
+   * leads silently, and you find out months later.
+   *
+   * Set it to any endpoint that accepts a POST of JSON: a Formspree or Basin
+   * URL, a Cloudflare Worker, or your own /api/leads. See landing/README.md.
+   */
+  var ENDPOINT = "";
+
+  var form = document.getElementById("joinform");
+  var done = document.getElementById("joindone");
+  var errorLine = document.getElementById("formerror");
+  if (!form || !done) return;
+
+  function fail(message) {
+    if (!errorLine) return;
+    errorLine.textContent = message;
+    errorLine.hidden = false;
+    errorLine.style.color = "var(--saffron)";
+  }
+
+  function succeed() {
+    form.hidden = true;
+    done.hidden = false;
+    done.setAttribute("tabindex", "-1");
+    done.focus();
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (errorLine) errorLine.hidden = true;
+
+    var data = Object.fromEntries(new FormData(form).entries());
+
+    // The only field worth insisting on: without it there is no way to reply.
+    if (!String(data.phone || "").trim()) {
+      fail("A phone number, so we can call you between rushes.");
+      var phone = document.getElementById("phone");
+      if (phone) phone.focus();
+      return;
+    }
+
+    if (!ENDPOINT) {
+      fail(
+        "This form is not connected yet — write to hello@caelum.cafe and " +
+          "we'll pick it up from there."
+      );
+      return;
+    }
+
+    var button = form.querySelector("button[type=submit]");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Sending…";
+    }
+
+    fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(data)
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error(String(response.status));
+        succeed();
+      })
+      .catch(function () {
+        fail("That didn't send. Try again, or write to hello@caelum.cafe.");
+        if (button) {
+          button.disabled = false;
+          button.textContent = "Request early access";
+        }
+      });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
-# app/commands/seed_departments.py
+import typer
+
 from app.core.database import SessionLocal
 from app.models.Department import Department
-import typer
 
 DEPARTMENTS = [
     "Kitchen",
@@ -17,7 +17,7 @@ def seed_departments(
         False,
         "--reset",
         help="Delete existing departments before seeding",
-    )
+    ),
 ):
     db = SessionLocal()
     try:
@@ -26,11 +26,7 @@ def seed_departments(
             db.commit()
             print("🧹 Departments table cleared")
         for department_name in DEPARTMENTS:
-            if (
-                not db.query(Department)
-                .filter_by(department_name=department_name)
-                .first()
-            ):
+            if not db.query(Department).filter_by(department_name=department_name).first():
                 db.add(Department(department_name=department_name))
                 print(f"✔ Department created: {department_name}")
             else:

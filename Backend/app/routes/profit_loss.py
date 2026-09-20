@@ -1,105 +1,82 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from typing import List
+"""ProfitLoss endpoints.
+
+HTTP binding only: path, verb, response model. What happens next is
+ProfitLossService; how it is fetched is ProfitLossRepository.
+"""
+
 from datetime import date
-from app.crud.base import CRUDBase
-from app.models.ProfitLoss import ProfitLoss
+
+from fastapi import APIRouter, Depends, Query
+
+from app.controllers.profitLossController import ProfitLossController
 from app.schemas.profit_loss import (
-    ProfitLossCreate,
-    ProfitLossUpdate,
-    ProfitLossOut,
+    DayCloseRequest,
     PaginatedProfitLossOut,
+    ProfitLossCreate,
+    ProfitLossOut,
+    ProfitLossUpdate,
 )
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from math import ceil
+from app.utils.pagination import PageParams, page_params
 
 router = APIRouter(prefix="/profit-loss", tags=["ProfitLoss"])
 
-profit_loss_crud = CRUDBase[ProfitLoss, ProfitLossCreate, ProfitLossUpdate](ProfitLoss)
 
-
-@router.post("/", response_model=ProfitLossOut)
-def create_profit_loss(
-    obj_in: ProfitLossCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+@router.get("/", response_model=PaginatedProfitLossOut)
+def list_entries(
+    start_date: date | None = Query(None),
+    end_date: date | None = Query(None),
+    params: PageParams = Depends(page_params),
+    controller: ProfitLossController = Depends(),
 ):
-    return profit_loss_crud.create(
-        db=db,
-        obj_in=obj_in,
-        current_user=current_user,
+    return controller.list(
+        params,
+        start_date=start_date,
+        end_date=end_date,
     )
+
+
+@router.post("/close-day", response_model=ProfitLossOut)
+def close_day(
+    payload: DayCloseRequest,
+    controller: ProfitLossController = Depends(),
+):
+    """Close the books for a day, with revenue read from the payments actually
+    recorded rather than typed from memory.
+
+    Safe to re-run: a late payment recorded after close updates the day's row
+    instead of failing on the unique constraint.
+    """
+    return controller.close_day(payload.date, payload.expenses)
 
 
 @router.get("/{profit_loss_id}", response_model=ProfitLossOut)
-def get_profit_loss(
+def get_entry(
     profit_loss_id: int,
-    db: Session = Depends(get_db),
+    controller: ProfitLossController = Depends(),
 ):
-    return profit_loss_crud.get(db, profit_loss_id)
+    return controller.get(profit_loss_id)
 
 
-# @router.get("/", response_model=List[ProfitLossOut])
-# def list_profit_loss(
-#     skip: int = 0,
-#     limit: int = 100,
-#     db: Session = Depends(get_db),
-# ):
-#     return profit_loss_crud.get_multi(db, skip=skip, limit=limit)
-
-
-@router.get("/", response_model=PaginatedProfitLossOut)
-def list_profit_loss(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    start_date: date | None = Query(None),
-    end_date: date | None = Query(None),
-    db: Session = Depends(get_db),
+@router.post("/", response_model=ProfitLossOut)
+def create_entry(
+    payload: ProfitLossCreate,
+    controller: ProfitLossController = Depends(),
 ):
-    skip = (page - 1) * limit
-    filters = []
-    if start_date:
-        filters.append(ProfitLoss.date >= start_date)
-    if end_date:
-        filters.append(ProfitLoss.date <= end_date)
-
-    profit_loss, total = profit_loss_crud.get_multi_paginated(
-        db, skip=skip, filters=filters, limit=limit
-    )
-    total_pages = ceil(total / limit)
-    return {
-        "data": profit_loss,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+    return controller.create(payload)
 
 
 @router.put("/{profit_loss_id}", response_model=ProfitLossOut)
-def update_profit_loss(
+def update_entry(
     profit_loss_id: int,
-    obj_in: ProfitLossUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: ProfitLossUpdate,
+    controller: ProfitLossController = Depends(),
 ):
-    db_obj = profit_loss_crud.get(db, profit_loss_id)
-    return profit_loss_crud.update(
-        db=db,
-        db_obj=db_obj,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
+    return controller.update(profit_loss_id, payload)
 
 
 @router.delete("/{profit_loss_id}", response_model=ProfitLossOut)
-def delete_profit_loss(
+def delete_entry(
     profit_loss_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: ProfitLossController = Depends(),
 ):
-    return profit_loss_crud.remove(
-        db=db,
-        id=profit_loss_id,
-        current_user=current_user,
-    )
+    return controller.delete(profit_loss_id)

@@ -1,13 +1,12 @@
 from datetime import datetime
-from typing import Optional, List
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ServiceBase(BaseModel):
-    name: str = Field(..., max_length=100, example="Table Decoration")
-    price: Decimal = Field(..., gt=0, example=499.99)
+    name: str = Field(..., max_length=100, json_schema_extra={"example": "Table Decoration"})
+    price: Decimal = Field(..., gt=0, json_schema_extra={"example": 499.99})
 
 
 class ServiceCreate(ServiceBase):
@@ -19,8 +18,8 @@ class ServiceCreate(ServiceBase):
 class ServiceUpdate(BaseModel):
     """Schema for updating a service (partial update allowed)"""
 
-    name: Optional[str] = Field(None, max_length=100)
-    price: Optional[Decimal] = Field(None, gt=0)
+    name: str | None = Field(None, max_length=100)
+    price: Decimal | None = Field(None, gt=0)
 
 
 class ServiceOut(BaseModel):
@@ -29,17 +28,14 @@ class ServiceOut(BaseModel):
     price: Decimal = Field(ge=0)
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedServiceOut(BaseModel):
-    data: List[ServiceOut]
+    data: list[ServiceOut]
     total: int
     totalPages: int
     currentPage: int

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +16,7 @@ import {
 } from "../../app/allSlices";
 
 const Increments = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingIncrement, setEditingIncrement] = useState(null);
@@ -43,7 +46,7 @@ const Increments = () => {
       label: "Old Package",
       render: (value) => {
         if (!value) return "-";
-        return `₹ ${Number(value).toFixed(2)} LPA`;
+        return `${formatMoney(value)} LPA`;
       },
     },
     {
@@ -51,7 +54,7 @@ const Increments = () => {
       label: "New Package",
       render: (value) => {
         if (!value) return "-";
-        return `₹ ${Number(value).toFixed(2)} LPA`;
+        return `${formatMoney(value)} LPA`;
       },
     },
     {
@@ -62,12 +65,7 @@ const Increments = () => {
     {
       key: "increment_date",
       label: "Increment Date",
-      render: (value) =>
-        new Date(value).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
+      render: (value) => formatDate(value),
     },
   ];
 
@@ -124,10 +122,15 @@ const Increments = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this increment?"))
+    if (!(await confirm({
+        title: "Delete this increment?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deleteIncrement(row.id).unwrap();
       toast.success("Increment deleted successfully");
       refetch();

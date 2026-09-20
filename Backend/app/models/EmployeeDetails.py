@@ -1,32 +1,44 @@
 from sqlalchemy import (
     Column,
+    Date,
+    ForeignKey,
+    Index,
     Integer,
     String,
-    Boolean,
-    Date,
     UniqueConstraint,
-    ForeignKey,
+)
+from sqlalchemy import (
     Enum as SQLEnum,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
-from app.models.Enums import *
+from app.models.Enums import EmployeeStatus, EmploymentType, enum_values  # noqa: F403
 
 
 class EmployeeDetails(Common):
     __tablename__ = "employee_details"
-    __table_args__ = (UniqueConstraint("employee_code", name="uq_employee_code"),)
+    __table_args__ = (
+        UniqueConstraint("employee_code", name="uq_employee_code"),
+        Index("ix_employee_details_outlet_deleted", "outlet_id", "is_deleted"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
+    outlet_id = Column(
+        Integer,
+        ForeignKey("outlets.id"),
+        nullable=True,
+        index=True,
+    )
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     employee_code = Column(String(255), nullable=False)
     joining_date = Column(Date, nullable=False)
     employment_type = Column(
-        SQLEnum(EmploymentType, name="employment_type_enum"),
+        SQLEnum(EmploymentType, name="employment_type_enum", values_callable=enum_values),
         nullable=False,
     )
     status = Column(
-        SQLEnum(EmployeeStatus, name="employee_status_enum"),
+        SQLEnum(EmployeeStatus, name="employee_status_enum", values_callable=enum_values),
         nullable=False,
         default=EmployeeStatus.ACTIVE,
     )
@@ -96,6 +108,8 @@ class EmployeeDetails(Common):
         foreign_keys="IncrementHistory.employee_id",
         back_populates="employee",
     )
+
+    outlet = relationship("Outlet", foreign_keys=[outlet_id])
 
     def __repr__(self):
         return f"<EmployeeDetails id={self.id} code={self.employee_code}>"

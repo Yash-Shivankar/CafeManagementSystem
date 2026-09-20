@@ -1,13 +1,15 @@
 from sqlalchemy import (
+    Boolean,
     Column,
+    Date,
+    ForeignKey,
+    Index,
     Integer,
     String,
-    Boolean,
-    Date,
     UniqueConstraint,
-    ForeignKey,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
 
 
@@ -16,9 +18,16 @@ class User(Common):
     __table_args__ = (
         UniqueConstraint("email", name="uq_users_email"),
         UniqueConstraint("mobile_number", name="uq_users_mobile"),
+        Index("ix_users_outlet_deleted", "outlet_id", "is_deleted"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    outlet_id = Column(
+        Integer,
+        ForeignKey("outlets.id"),
+        nullable=True,
+        index=True,
+    )
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     email = Column(String(255), nullable=True, index=True)
@@ -64,6 +73,12 @@ class User(Common):
         "Booking",
         foreign_keys="Booking.staff_user_id",
         back_populates="staff",
+    )
+
+    outlet = relationship(
+        "Outlet",
+        foreign_keys=[outlet_id],
+        back_populates="users",
     )
 
     def __repr__(self):

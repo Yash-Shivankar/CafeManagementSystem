@@ -1,7 +1,7 @@
-# app/commands/seed_designations.py
+import typer
+
 from app.core.database import SessionLocal
 from app.models.Designation import Designation
-import typer
 
 DESIGNATIONS = [
     "Chef",
@@ -17,7 +17,7 @@ def seed_designations(
         False,
         "--reset",
         help="Delete existing Designation before seeding",
-    )
+    ),
 ):
     db = SessionLocal()
     try:
@@ -26,11 +26,7 @@ def seed_designations(
             db.commit()
             print("🧹 Designations table cleared")
         for designation_name in DESIGNATIONS:
-            if (
-                not db.query(Designation)
-                .filter_by(designation_name=designation_name)
-                .first()
-            ):
+            if not db.query(Designation).filter_by(designation_name=designation_name).first():
                 db.add(Designation(designation_name=designation_name))
                 print(f"✔ Designation created: {designation_name}")
             else:

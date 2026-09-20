@@ -1,7 +1,7 @@
-# app/commands/seed_inventory_categories.py
+import typer
+
 from app.core.database import SessionLocal
 from app.models.InventoryCategory import InventoryCategory
-import typer
 
 CATEGORIES = [
     "Raw Materials",
@@ -17,7 +17,7 @@ def seed_inventory_categories(
         False,
         "--reset",
         help="Delete existing Inventory categories before seeding",
-    )
+    ),
 ):
     db = SessionLocal()
     try:
