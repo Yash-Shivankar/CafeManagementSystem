@@ -1,6 +1,6 @@
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+
 from app.core.config import settings
 
 engine = create_engine(
@@ -19,12 +19,30 @@ Base = declarative_base()
 
 
 def get_db():
+    """One session per request. It does not commit.
+
+    It deliberately does not `yield db` and then `db.commit()`, and no
+    data-access class commits inside create, update or delete either. Two
+    problems with doing it that way:
+
+    1. **No unit of work.** A use-case that wrote three rows and failed on the
+       fourth had already committed the first three, with no way to undo them.
+    2. **The commit ran after the response.** FastAPI tears a yield-dependency
+       down *after* the handler returns, so a commit that failed there raised
+       against a client who had already been told 200 OK.
+
+    Services now own the transaction and commit at the end of a use-case, where
+    a failure can still turn into an error response. This function's only jobs
+    are to hand out a session, roll back anything left open if the request
+    exploded, and close.
+    """
     db = SessionLocal()
     try:
         yield db
-        db.commit()
     except Exception:
         db.rollback()
         raise
     finally:
+        if db.in_transaction():
+            db.rollback()
         db.close()

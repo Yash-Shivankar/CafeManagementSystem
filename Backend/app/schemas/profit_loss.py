@@ -1,14 +1,14 @@
 import datetime
-from typing import Optional, List
 from decimal import Decimal
-from pydantic import BaseModel, Field, field_validator, model_validator
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProfitLossBase(BaseModel):
-    date: datetime.date = Field(..., example="2025-03-31")
+    date: datetime.date = Field(..., json_schema_extra={"example": "2025-03-31"})
 
-    revenue: Decimal = Field(..., ge=0, example=250000.00)
-    expenses: Decimal = Field(..., ge=0, example=180000.00)
+    revenue: Decimal = Field(..., ge=0, json_schema_extra={"example": 250000.00})
+    expenses: Decimal = Field(..., ge=0, json_schema_extra={"example": 180000.00})
 
 
 class ProfitLossCreate(ProfitLossBase):
@@ -16,36 +16,38 @@ class ProfitLossCreate(ProfitLossBase):
 
     profit: Decimal | None = None
 
-    @model_validator(mode="after")
-    def calculate_profit(self):
-        self.profit = self.revenue - self.expenses
-        return self
-
 
 class ProfitLossUpdate(BaseModel):
     """Schema for updating profit/loss (partial updates allowed)"""
 
-    revenue: Optional[Decimal] = Field(None, ge=0)
-    expenses: Optional[Decimal] = Field(None, ge=0)
-    profit: Optional[Decimal] = Field(None)
+    revenue: Decimal | None = Field(None, ge=0)
+    expenses: Decimal | None = Field(None, ge=0)
+    profit: Decimal | None = Field(None)
 
 
 class ProfitLossOut(ProfitLossBase):
     id: int
-    profit: Optional[Decimal]
+    profit: Decimal | None
     created_at: datetime.datetime
     updated_at: datetime.datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    deleted_at: Optional[datetime.datetime] = None
+    created_by: int | None = None
+    updated_by: int | None = None
+    deleted_at: datetime.datetime | None = None
     is_deleted: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedProfitLossOut(BaseModel):
-    data: List[ProfitLossOut]
+    data: list[ProfitLossOut]
     total: int
     totalPages: int
     currentPage: int
+
+
+class DayCloseRequest(BaseModel):
+    """Revenue is not accepted here — it is read from the payments actually
+    recorded for that day, which is the whole point of closing a day."""
+
+    date: datetime.date
+    expenses: Decimal = Field(default=Decimal("0"), ge=0)

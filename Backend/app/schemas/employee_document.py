@@ -1,7 +1,7 @@
-# app/schemas/employee_document.py
 from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel
+
+from pydantic import BaseModel, ConfigDict
+
 from app.schemas.employee_details import EmployeeDetailsOut
 
 
@@ -19,13 +19,13 @@ class EmployeeDocumentCreate(EmployeeDocumentBase):
 
 
 class EmployeeDocumentUpdate(BaseModel):
-    doc_type: Optional[str] = None
-    doc_url: Optional[str] = None
+    doc_type: str | None = None
+    doc_url: str | None = None
 
 
 class EmployeeDocumentOut(BaseModel):
     id: int
-    employee: Optional[EmployeeDetailsOut]
+    employee: EmployeeDetailsOut | None
     doc_type: str
     doc_url: str
     original_name: str
@@ -33,17 +33,14 @@ class EmployeeDocumentOut(BaseModel):
     filename: str
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedEmployeeDocumentOut(BaseModel):
-    data: List[EmployeeDocumentOut]
+    data: list[EmployeeDocumentOut]
     total: int
     totalPages: int
     currentPage: int

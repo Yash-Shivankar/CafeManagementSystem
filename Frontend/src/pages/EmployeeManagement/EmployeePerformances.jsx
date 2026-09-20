@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -16,6 +18,7 @@ import {
 } from "../../app/allSlices";
 
 const EmployeePerformances = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingPerformance, setEditingPerformance] = useState(null);
@@ -63,7 +66,7 @@ const EmployeePerformances = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -94,14 +97,7 @@ const EmployeePerformances = () => {
     {
       key: "review_date",
       label: "Review Date",
-      render: (value) => {
-        const date = new Date(value);
-        return date.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        });
-      },
+      render: (value) => formatDate(value),
     },
   ];
 
@@ -154,14 +150,15 @@ const EmployeePerformances = () => {
   };
 
   const handleDelete = async (row) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this employee performances?",
-      )
-    )
+    if (!(await confirm({
+        title: "Delete this performance review?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deletePerformance(row.id).unwrap();
       toast.success("Employee Performances deleted successfully");
       refetch();

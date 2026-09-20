@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -15,6 +17,7 @@ import {
 } from "../../app/allSlices";
 
 const CustomerInvoices = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
@@ -72,7 +75,7 @@ const CustomerInvoices = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -97,25 +100,18 @@ const CustomerInvoices = () => {
     {
       key: "total_amount",
       label: "Total Amount",
-      render: (value) => `₹ ${Number(value).toFixed(2)}`,
+      render: (value) => formatMoney(value),
     },
     {
       key: "paid_amount",
       label: "Paid Amount",
-      render: (value) => `₹ ${Number(value).toFixed(2)}`,
+      render: (value) => formatMoney(value),
     },
     { key: "status", label: "Status" },
     {
       key: "invoice_date",
       label: "Invoice Date",
-      render: (value) => {
-        const date = new Date(value);
-        return date.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        });
-      },
+      render: (value) => formatDate(value),
     },
   ];
 
@@ -138,7 +134,6 @@ const CustomerInvoices = () => {
       step: "0.01",
       required: true,
     },
-
     {
       name: "paid_amount",
       label: "Paid Amount",
@@ -181,10 +176,15 @@ const CustomerInvoices = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this invoice?"))
+    if (!(await confirm({
+          title: "Delete this invoice?",
+          message:
+            "It will stop appearing in lists and reports. This cannot be undone from the app.",
+          tone: "danger",
+          confirmLabel: "Delete",
+          }))) {
       return;
-
-    try {
+    }try {
       await deleteInvoice(row.id).unwrap();
       toast.success("Invoice deleted successfully");
       refetch();

@@ -1,46 +1,44 @@
-# app/schemas/customer_feedback.py
 from datetime import datetime
-from typing import Optional, Annotated, List
-from pydantic import BaseModel, Field
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.schemas.user import UserOut
 
 
 class CustomerFeedbackBase(BaseModel):
     user_id: int
     rating: Annotated[int, Field(ge=1, le=5)]
-    feedback: Optional[str] = None
-    date_given: Optional[datetime] = None  # defaults to now if not provided
+    feedback: str | None = None
+    date_given: datetime | None = None
 
 
 class CustomerFeedbackCreate(CustomerFeedbackBase):
-    pass  # all fields can be provided
+    pass
 
 
 class CustomerFeedbackUpdate(BaseModel):
-    rating: Optional[Annotated[int, Field(ge=1, le=5)]] = None
-    feedback: Optional[str] = None
-    date_given: Optional[datetime] = None
+    rating: Annotated[int, Field(ge=1, le=5)] | None = None
+    feedback: str | None = None
+    date_given: datetime | None = None
 
 
 class CustomerFeedbackOut(BaseModel):
     id: int
-    user: Optional[UserOut]
+    user: UserOut | None
     rating: Annotated[int, Field(ge=1, le=5)]
-    feedback: Optional[str] = None
-    date_given: Optional[datetime] = None
+    feedback: str | None = None
+    date_given: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedCustomerFeedbackOut(BaseModel):
-    data: List[CustomerFeedbackOut]
+    data: list[CustomerFeedbackOut]
     total: int
     totalPages: int
     currentPage: int

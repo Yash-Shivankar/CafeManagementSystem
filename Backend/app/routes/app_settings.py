@@ -1,89 +1,46 @@
-from app.crud.base import CRUDBase
-from app.models.AppSettings import AppSettings
-from app.schemas.app_settings import SettingCreate, SettingUpdate, SettingOut
-from app.dependencies.auth import get_current_user
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from typing import List
+"""Settings endpoints.
 
-from app.core.database import get_db
+Addressed by key rather than id. The list stays an unpaginated array because
+there are a handful of settings and the SPA reads the whole set on boot.
+"""
+
+from fastapi import APIRouter, Depends, status
+
+from app.controllers.appSettingController import AppSettingController
+from app.schemas.app_settings import SettingCreate, SettingOut, SettingUpdate
 
 router = APIRouter(prefix="/settings", tags=["Settings"])
-setting_crud = CRUDBase[AppSettings, SettingCreate, SettingUpdate](AppSettings)
 
 
-@router.get("/", response_model=List[SettingOut])
-def get_all_settings(db: Session = Depends(get_db)):
-    settings = setting_crud.get_multi(db, skip=0, limit=1000)
-    return settings
+@router.get("/", response_model=list[SettingOut])
+def get_all_settings(controller: AppSettingController = Depends()):
+    return controller.list_all()
 
 
 @router.get("/{key}", response_model=SettingOut)
-def get_setting(
-    key: str,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    setting = (
-        db.query(AppSettings)
-        .filter(AppSettings.key == key, AppSettings.is_deleted == False)
-        .first()
-    )
-    if not setting:
-        raise HTTPException(status_code=404, detail="Setting not found")
-    return setting
+def get_setting(key: str, controller: AppSettingController = Depends()):
+    return controller.get_by_key(key)
 
 
-@router.post(
-    "/",
-    response_model=SettingOut,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/", response_model=SettingOut, status_code=status.HTTP_201_CREATED)
 def create_setting(
     payload: SettingCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: AppSettingController = Depends(),
 ):
-    existing = (
-        db.query(AppSettings)
-        .filter(AppSettings.key == payload.key, AppSettings.is_deleted == False)
-        .first()
-    )
-    if existing:
-        raise HTTPException(status_code=400, detail="Setting key already exists")
-    return setting_crud.create(db, payload, current_user=current_user)
+    return controller.create(payload)
 
 
 @router.put("/{key}", response_model=SettingOut)
 def update_setting(
     key: str,
     payload: SettingUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: AppSettingController = Depends(),
 ):
-    setting = (
-        db.query(AppSettings)
-        .filter(AppSettings.key == key, AppSettings.is_deleted == False)
-        .first()
-    )
-    if not setting:
-        # create if not exist
-        return setting_crud.create(db, SettingCreate(key=key, value=payload.value))
-    return setting_crud.update(db, setting, payload, current_user=current_user)
+    """Upsert — creates the setting if it does not exist yet, which is what the
+    previous handler already did, just without saying so."""
+    return controller.set_value(key, payload.value)
 
 
 @router.delete("/{key}", response_model=dict)
-def delete_setting(
-    key: str,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    setting = (
-        db.query(AppSettings)
-        .filter(AppSettings.key == key, AppSettings.is_deleted == False)
-        .first()
-    )
-    if not setting:
-        raise HTTPException(status_code=404, detail="Setting not found")
-    setting_crud.remove(db, setting.id, current_user=current_user)
-    return {"detail": "Setting deleted successfully"}
+def delete_setting(key: str, controller: AppSettingController = Depends()):
+    return controller.delete_by_key(key)

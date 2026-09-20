@@ -1,8 +1,8 @@
-# app/schemas/employee_attendance.py
 from datetime import date, datetime
-from typing import Optional, List
-from pydantic import BaseModel
-from app.models.Enums import AttendanceStatus, AttendanceSession
+
+from pydantic import BaseModel, ConfigDict
+
+from app.models.Enums import AttendanceSession, AttendanceStatus
 from app.schemas.employee_details import EmployeeDetailsOut
 
 
@@ -10,9 +10,9 @@ class EmployeeAttendanceBase(BaseModel):
     employee_id: int
     date: date
     session: AttendanceSession
-    check_in: Optional[datetime] = None
-    check_out: Optional[datetime] = None
-    status: Optional[AttendanceStatus] = AttendanceStatus.PRESENT
+    check_in: datetime | None = None
+    check_out: datetime | None = None
+    status: AttendanceStatus | None = AttendanceStatus.PRESENT
 
 
 class EmployeeAttendanceCreate(EmployeeAttendanceBase):
@@ -20,32 +20,29 @@ class EmployeeAttendanceCreate(EmployeeAttendanceBase):
 
 
 class EmployeeAttendanceUpdate(BaseModel):
-    check_in: Optional[datetime] = None
-    check_out: Optional[datetime] = None
-    status: Optional[AttendanceStatus] = None
+    check_in: datetime | None = None
+    check_out: datetime | None = None
+    status: AttendanceStatus | None = None
 
 
 class EmployeeAttendanceOut(BaseModel):
     id: int
-    employee: Optional[EmployeeDetailsOut] = {}
+    employee: EmployeeDetailsOut | None = {}
     date: date
     session: AttendanceSession
-    check_in: Optional[datetime] = None
-    check_out: Optional[datetime] = None
-    status: Optional[AttendanceStatus] = AttendanceStatus.PRESENT
+    check_in: datetime | None = None
+    check_out: datetime | None = None
+    status: AttendanceStatus | None = AttendanceStatus.PRESENT
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedEmployeeAttendanceOut(BaseModel):
-    data: List[EmployeeAttendanceOut]
+    data: list[EmployeeAttendanceOut]
     total: int
     totalPages: int
     currentPage: int

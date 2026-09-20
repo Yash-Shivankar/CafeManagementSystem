@@ -1,5 +1,6 @@
-from sqlalchemy import Column, DateTime, Boolean, Integer, ForeignKey, func
-from sqlalchemy.orm import relationship, declared_attr
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy.orm import declared_attr, relationship
+
 from app.core.database import Base
 
 

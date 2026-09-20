@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "caelum-backend"
+version = "0.2.0"
+description = "Caelum — back-office and point of sale for independent cafes."
+requires-python = ">=3.12"
+
+dependencies = [
+    "fastapi>=0.123,<0.124",
+    "uvicorn[standard]>=0.38,<0.39",
+    "pydantic>=2.12,<3",
+    "pydantic-settings>=2.12,<3",
+    "email-validator>=2.3",
+    "sqlalchemy>=2.0.44,<2.1",
+    "alembic>=1.17,<2",
+    "psycopg[binary]>=3.3,<4",
+    "PyJWT>=2.10,<3",
+    "passlib>=1.7.4",
+    "argon2-cffi>=25.1",
+    "python-multipart>=0.0.20",
+    "python-dotenv>=1.2",
+    "typer>=0.20,<1",
+    "tzdata>=2025.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "httpx>=0.28",
+    "ruff>=0.14",
+    "mypy>=1.19",
+]
+
+[tool.setuptools]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-q --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning:passlib.*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # import order
+    "B",   # bugbear
+    "UP",  # pyupgrade
+    "C4",  # comprehensions
+]
+ignore = [
+    "B008",   # FastAPI's Depends() in a default argument is the framework's idiom
+    "E501",   # line length is checked by the formatter, not the linter
+    # `class X(str, Enum)` -> `StrEnum` is not a refactor here, it is a data
+    # migration: SQLEnum persists the member name and the columns already hold
+    # those names, so changing the base class changes what is written.
+    "UP042",
+    # PEP 695 generics read better but would be the only 3.12-only syntax in
+    # the codebase, for no functional gain.
+    "UP046",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Models and schemas are declarative; a long column definition is not a smell.
+"app/models/*" = ["E501"]
+"tests/*" = ["B011"]
+# `from app.models import *` is how every model gets onto Base.metadata before
+# autogenerate walks it. Naming every import here would be a list that goes
+# stale silently, which is the failure this import exists to prevent.
+"alembic/env.py" = ["F403", "F401"]
+
+[tool.mypy]
+python_version = "3.12"
+# app/ has no __init__.py, so without these two mypy derives module names from
+# the bare filename and dies on schemas/auth.py vs dependencies/auth.py.
+explicit_package_bases = true
+mypy_path = "."
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = true
+exclude = "alembic/"

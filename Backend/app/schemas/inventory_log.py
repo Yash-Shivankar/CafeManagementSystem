@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel, Field
-from app.schemas.inventory_item import InventoryItemOut
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.models.Enums import InventoryChangeType
+from app.schemas.inventory_item import InventoryItemOut
 
 
 class InventoryLogBase(BaseModel):
@@ -10,7 +11,7 @@ class InventoryLogBase(BaseModel):
     change_type: InventoryChangeType
 
     quantity: int = Field(..., gt=0, description="Always positive number")
-    reference: Optional[str] = Field(default=None, max_length=100)
+    reference: str | None = Field(default=None, max_length=100)
 
 
 class InventoryLogCreate(InventoryLogBase):
@@ -23,22 +24,21 @@ class InventoryLogUpdate(InventoryLogBase):
 
 class InventoryLogOut(BaseModel):
     id: int
-    item: Optional[InventoryItemOut]
+    item: InventoryItemOut | None
     change_type: InventoryChangeType
     quantity: int = Field(..., gt=0, description="Always positive number")
-    reference: Optional[str] = Field(default=None, max_length=100)
+    reference: str | None = Field(default=None, max_length=100)
     changed_on: datetime
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int]
-    updated_by: Optional[int]
+    created_by: int | None
+    updated_by: int | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedInventoryLogOut(BaseModel):
-    data: List[InventoryLogOut]
+    data: list[InventoryLogOut]
     total: int
     totalPages: int
     currentPage: int

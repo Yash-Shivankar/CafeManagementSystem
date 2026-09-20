@@ -1,0 +1,5 @@
+# Caelum marketing site.
+User-agent: *
+Allow: /
+
+Sitemap: https://caelum.cafe/sitemap.xml

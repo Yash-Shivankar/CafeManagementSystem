@@ -1,26 +1,27 @@
-from datetime import date, datetime
-from typing import Optional, List
-from pydantic import BaseModel, EmailStr, model_validator
+from datetime import date
+
+from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
+
+from app.schemas.outlet import OutletSummary
 from app.schemas.role import RoleOut
 
 
-# Base schema with shared fields
 class UserBase(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    mobile_number: Optional[str] = None
-    role_id: Optional[int] = None
-    date_of_birth: Optional[date] = None
-    gender: Optional[str] = None
-    is_active: Optional[bool] = True
-    is_staff: Optional[bool] = False
-    is_superuser: Optional[bool] = False
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
+    mobile_number: str | None = None
+    role_id: int | None = None
+    outlet_id: int | None = None
+    date_of_birth: date | None = None
+    gender: str | None = None
+    is_active: bool | None = True
+    is_staff: bool | None = False
+    is_superuser: bool | None = False
 
 
-# Schema used for creation
 class UserCreate(UserBase):
-    password: Optional[str] = None
+    password: str | None = None
 
     @model_validator(mode="after")
     def validate_login_identifier(self):
@@ -29,29 +30,27 @@ class UserCreate(UserBase):
         return self
 
 
-# Schema used for updates
 class UserUpdate(UserBase):
-    password: Optional[str] = None  # optional for updates
+    password: str | None = None
 
 
-# Schema used for responses (output)
 class UserOut(BaseModel):
     id: int
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    mobile_number: Optional[str] = None
-    role: Optional[RoleOut]
-    date_of_birth: Optional[date] = None
-    gender: Optional[str] = None
-    is_active: Optional[bool] = True
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
+    mobile_number: str | None = None
+    role: RoleOut | None
+    outlet: OutletSummary | None = None
+    date_of_birth: date | None = None
+    gender: str | None = None
+    is_active: bool | None = True
 
-    class Config:
-        from_attributes = True  # allows ORM models to be returned directly
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedUserOut(BaseModel):
-    data: List[UserOut]
+    data: list[UserOut]
     total: int
     totalPages: int
     currentPage: int

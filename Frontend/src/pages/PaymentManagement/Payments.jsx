@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -15,6 +17,7 @@ import {
 } from "../../app/allSlices";
 
 const Payments = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
@@ -76,7 +79,7 @@ const Payments = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -100,20 +103,13 @@ const Payments = () => {
     {
       key: "amount",
       label: "Amount",
-      render: (value) => `₹ ${Number(value).toFixed(2)}`,
+      render: (value) => formatMoney(value),
     },
     { key: "method", label: "Method" },
     {
       key: "payment_date",
       label: "Payment Date",
-      render: (value) =>
-        value
-          ? new Date(value).toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "-",
+      render: (value) => (value ? formatDate(value) : "-"),
     },
   ];
 
@@ -129,7 +125,6 @@ const Payments = () => {
         })) || [],
       required: true,
     },
-
     {
       name: "amount",
       label: "Amount",
@@ -138,7 +133,6 @@ const Payments = () => {
       step: "0.01",
       required: true,
     },
-
     {
       name: "method",
       label: "Payment Method",
@@ -150,7 +144,6 @@ const Payments = () => {
       ],
       required: true,
     },
-
     {
       name: "payment_date",
       label: "Payment Date",
@@ -180,10 +173,15 @@ const Payments = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this payment?"))
+    if (!(await confirm({
+        title: "Delete this payment?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deletePayment(row.id).unwrap();
       toast.success("Payment deleted successfully");
       refetch();

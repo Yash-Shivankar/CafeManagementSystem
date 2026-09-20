@@ -1,126 +1,82 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import or_
-from sqlalchemy.orm import Session
-from typing import List
+"""Inventory Items endpoints.
 
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from app.crud.base import CRUDBase
-from app.models.InventoryItem import InventoryItem
+HTTP binding only: path, verb, response model. What happens next is
+InventoryItemService; how it is fetched is InventoryItemRepository.
+"""
+
+from fastapi import APIRouter, Depends, Query
+
+from app.controllers.inventoryItemController import InventoryItemController
 from app.schemas.inventory_item import (
     InventoryItemCreate,
-    InventoryItemUpdate,
     InventoryItemOut,
+    InventoryItemUpdate,
     PaginatedInventoryItemOut,
 )
-from math import ceil
+from app.utils.pagination import PageParams, page_params
 
-router = APIRouter(
-    prefix="/inventory-items",
-    tags=["Inventory Items"],
-)
-
-item_crud = CRUDBase[
-    InventoryItem,
-    InventoryItemCreate,
-    InventoryItemUpdate,
-](InventoryItem)
-
-
-@router.post("/", response_model=InventoryItemOut)
-def create_inventory_item(
-    obj_in: InventoryItemCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    return item_crud.create(
-        db=db,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
-
-
-@router.get("/{item_id}", response_model=InventoryItemOut)
-def get_inventory_item(
-    item_id: int,
-    db: Session = Depends(get_db),
-):
-    return item_crud.get(db, item_id)
-
-
-# @router.get("/", response_model=List[InventoryItemOut])
-# def list_inventory_items(
-#     skip: int = 0,
-#     limit: int = 100,
-#     category_id: int | None = None,
-#     db: Session = Depends(get_db),
-# ):
-#     query = db.query(InventoryItem).filter(InventoryItem.is_deleted == False)
-
-#     if category_id:
-#         query = query.filter(InventoryItem.category_id == category_id)
-
-#     return query.offset(skip).limit(limit).all()
+router = APIRouter(prefix="/inventory-items", tags=["Inventory Items"])
 
 
 @router.get("/", response_model=PaginatedInventoryItemOut)
-def list_inventory_items(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
+def list_items(
     category_id: int | None = Query(None),
     search: str | None = Query(None, min_length=1),
-    db: Session = Depends(get_db),
+    params: PageParams = Depends(page_params),
+    controller: InventoryItemController = Depends(),
 ):
-    skip = (page - 1) * limit
-
-    filters = []
-
-    if category_id:
-        filters.append(InventoryItem.category_id == category_id)
-
-    if search:
-        filters.append(
-            or_(
-                InventoryItem.name.ilike(f"%{search}%"),
-            )
-        )
-
-    inventory_items, total = item_crud.get_multi_paginated(
-        db, skip=skip, limit=limit, filters=filters, relationships=["category"]
+    return controller.list(
+        params,
+        search=search,
+        category_id=category_id,
     )
-    total_pages = ceil(total / limit)
-    return {
-        "data": inventory_items,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+
+
+@router.get("/low-stock", response_model=PaginatedInventoryItemOut)
+def list_low_stock(
+    params: PageParams = Depends(page_params),
+    controller: InventoryItemController = Depends(),
+):
+    """Items at or below their reorder level.
+
+    Every item carries a reorder level, and this is the endpoint that compares
+    stock against it. Without it `min_quantity` is a column nothing reads.
+
+    Declared before `/{item_id}` on purpose: FastAPI matches routes in order,
+    and `{item_id}: int` would reject "low-stock" with a 422 rather than
+    falling through to this one.
+    """
+    return controller.low_stock(params)
+
+
+@router.get("/{item_id}", response_model=InventoryItemOut)
+def get_item(
+    item_id: int,
+    controller: InventoryItemController = Depends(),
+):
+    return controller.get(item_id)
+
+
+@router.post("/", response_model=InventoryItemOut)
+def create_item(
+    payload: InventoryItemCreate,
+    controller: InventoryItemController = Depends(),
+):
+    return controller.create(payload)
 
 
 @router.put("/{item_id}", response_model=InventoryItemOut)
-def update_inventory_item(
+def update_item(
     item_id: int,
-    obj_in: InventoryItemUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: InventoryItemUpdate,
+    controller: InventoryItemController = Depends(),
 ):
-    db_obj = item_crud.get(db, item_id)
-    return item_crud.update(
-        db=db,
-        db_obj=db_obj,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
+    return controller.update(item_id, payload)
 
 
 @router.delete("/{item_id}", response_model=InventoryItemOut)
-def delete_inventory_item(
+def delete_item(
     item_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: InventoryItemController = Depends(),
 ):
-    return item_crud.remove(
-        db=db,
-        id=item_id,
-        current_user=current_user,
-    )
+    return controller.delete(item_id)

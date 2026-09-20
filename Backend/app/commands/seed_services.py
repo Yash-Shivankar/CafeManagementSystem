@@ -1,7 +1,7 @@
-# app/commands/seed_services.py
+import typer
+
 from app.core.database import SessionLocal
 from app.models.Service import Service
-import typer
 
 SERVICES = [
     {"name": "Dine In", "price": 0},
@@ -16,7 +16,7 @@ def seed_services(
         False,
         "--reset",
         help="Delete existing services before seeding",
-    )
+    ),
 ):
     db = SessionLocal()
     try:

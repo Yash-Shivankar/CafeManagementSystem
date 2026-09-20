@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, List
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.models.Enums import IncentiveType
 from app.schemas.employee_details import EmployeeDetailsOut
 
@@ -18,29 +18,26 @@ class IncentiveCreate(IncentiveBase):
 
 
 class IncentiveUpdate(BaseModel):
-    type: Optional[IncentiveType] = None
-    amount: Optional[Decimal] = Field(default=None, gt=0)
+    type: IncentiveType | None = None
+    amount: Decimal | None = Field(default=None, gt=0)
 
 
 class IncentiveOut(IncentiveBase):
     id: int
-    employee: Optional[EmployeeDetailsOut]
+    employee: EmployeeDetailsOut | None
     type: IncentiveType
     amount: Decimal = Field(gt=0)
     date_given: datetime
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedIncentiveOut(BaseModel):
-    data: List[IncentiveOut]
+    data: list[IncentiveOut]
     total: int
     totalPages: int
     currentPage: int

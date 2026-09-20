@@ -1,15 +1,18 @@
 from sqlalchemy import (
     Column,
+    ForeignKey,
+    Index,
     Integer,
     String,
-    ForeignKey,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
 
 
 class EmployeeDocument(Common):
     __tablename__ = "employee_documents"
+    __table_args__ = (Index("ix_employee_documents_is_deleted", "is_deleted"),)
 
     id = Column(Integer, primary_key=True, index=True)
 

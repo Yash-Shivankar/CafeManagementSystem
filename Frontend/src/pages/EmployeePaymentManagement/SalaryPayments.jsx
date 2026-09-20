@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +16,7 @@ import {
 } from "../../app/allSlices";
 
 const SalaryPayments = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
@@ -43,34 +46,27 @@ const SalaryPayments = () => {
     {
       key: "gross_salary",
       label: "Gross Salary (₹)",
-      render: (v) => `₹ ${Number(v).toLocaleString("en-IN")}`,
+      render: (v) => formatMoney(v),
     },
     {
       key: "pf_deducted",
       label: "PF (₹)",
-      render: (v) => `₹ ${Number(v).toLocaleString("en-IN")}`,
+      render: (v) => formatMoney(v),
     },
     {
       key: "esi_deducted",
       label: "ESI (₹)",
-      render: (v) => `₹ ${Number(v).toLocaleString("en-IN")}`,
+      render: (v) => formatMoney(v),
     },
     {
       key: "net_salary",
       label: "Net Salary (₹)",
-      render: (v) => `₹ ${Number(v).toLocaleString("en-IN")}`,
+      render: (v) => formatMoney(v),
     },
     {
       key: "paid_on",
       label: "Paid On",
-      render: (v) =>
-        v
-          ? new Date(v).toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "Unpaid",
+      render: (v) => (v ? formatDate(v) : "Unpaid"),
     },
   ];
 
@@ -163,10 +159,15 @@ const SalaryPayments = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this payment?"))
+    if (!(await confirm({
+        title: "Delete this payment?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deletePayment(row.id).unwrap();
       toast.success("Payment deleted successfully");
       refetch();

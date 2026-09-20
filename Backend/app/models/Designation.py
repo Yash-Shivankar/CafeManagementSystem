@@ -1,14 +1,17 @@
 from sqlalchemy import (
     Column,
+    Index,
     Integer,
     String,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
 
 
 class Designation(Common):
     __tablename__ = "designations"
+    __table_args__ = (Index("ix_designations_is_deleted", "is_deleted"),)
 
     id = Column(Integer, primary_key=True, index=True)
     designation_name = Column(String(255), nullable=False, unique=True)

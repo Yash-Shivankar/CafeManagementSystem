@@ -1,7 +1,4 @@
-# app/schemas/designation.py
-from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DesignationBase(BaseModel):
@@ -13,24 +10,17 @@ class DesignationCreate(DesignationBase):
 
 
 class DesignationUpdate(BaseModel):
-    designation_name: Optional[str] = None
+    designation_name: str | None = None
 
 
 class DesignationOut(DesignationBase):
     id: int
-    # created_at: datetime
-    # updated_at: datetime
-    # created_by: Optional[int] = None
-    # updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedDesignationOut(BaseModel):
-    data: List[DesignationOut]
+    data: list[DesignationOut]
     total: int
     totalPages: int
     currentPage: int

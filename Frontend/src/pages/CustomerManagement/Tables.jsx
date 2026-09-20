@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +15,7 @@ import {
 } from "../../app/allSlices";
 
 const Tables = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingTable, setEditingTable] = useState(null);
@@ -48,7 +50,7 @@ const Tables = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -101,9 +103,15 @@ const Tables = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this table?")) return;
-
-    try {
+    if (!(await confirm({
+        title: "Delete this table?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
+      return;
+    }try {
       await deleteTable(row.id).unwrap();
       toast.success("Table deleted successfully");
       refetch();

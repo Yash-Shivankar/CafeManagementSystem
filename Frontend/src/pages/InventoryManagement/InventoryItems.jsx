@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -15,6 +17,7 @@ import {
 } from "../../app/allSlices";
 
 const InventoryItems = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -62,7 +65,7 @@ const InventoryItems = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -89,12 +92,12 @@ const InventoryItems = () => {
     {
       key: "cost_price",
       label: "Cost Price",
-      render: (value) => `₹ ${Number(value).toFixed(2)}`,
+      render: (value) => formatMoney(value),
     },
     {
       key: "selling_price",
       label: "Selling Price",
-      render: (value) => `₹ ${Number(value).toFixed(2)}`,
+      render: (value) => formatMoney(value),
     },
   ];
 
@@ -105,7 +108,6 @@ const InventoryItems = () => {
       type: "text",
       required: true,
     },
-
     {
       name: "category_id",
       label: "Category",
@@ -117,7 +119,6 @@ const InventoryItems = () => {
         })) || [],
       required: true,
     },
-
     {
       name: "quantity",
       label: "Quantity",
@@ -125,7 +126,6 @@ const InventoryItems = () => {
       min: 0,
       step: 1,
     },
-
     {
       name: "min_quantity",
       label: "Minimum Quantity",
@@ -133,7 +133,6 @@ const InventoryItems = () => {
       min: 0,
       step: 1,
     },
-
     {
       name: "cost_price",
       label: "Cost Price",
@@ -142,7 +141,6 @@ const InventoryItems = () => {
       step: "0.01",
       required: true,
     },
-
     {
       name: "selling_price",
       label: "Selling Price",
@@ -175,9 +173,15 @@ const InventoryItems = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
-
-    try {
+    if (!(await confirm({
+        title: "Delete this inventory item?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
+      return;
+    }try {
       await deleteItem(row.id).unwrap();
       toast.success("Item deleted successfully");
       refetch();

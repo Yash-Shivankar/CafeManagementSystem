@@ -1,99 +1,61 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from typing import List
+"""SalaryStructures endpoints.
 
-from app.crud.base import CRUDBase
-from app.models.SalaryStructure import SalaryStructure
+HTTP binding only: path, verb, response model. What happens next is
+SalaryStructureService; how it is fetched is SalaryStructureRepository.
+"""
+
+from fastapi import APIRouter, Depends
+
+from app.controllers.salaryStructureController import SalaryStructureController
 from app.schemas.salary_structure import (
-    SalaryStructureCreate,
-    SalaryStructureUpdate,
-    SalaryStructureOut,
     PaginatedSalaryStructureOut,
+    SalaryStructureCreate,
+    SalaryStructureOut,
+    SalaryStructureUpdate,
 )
-from app.core.database import get_db
-from app.dependencies.auth import get_current_user
-from math import ceil
+from app.utils.pagination import PageParams, page_params
 
 router = APIRouter(prefix="/salary-structures", tags=["SalaryStructures"])
 
-salary_structure_crud = CRUDBase[
-    SalaryStructure, SalaryStructureCreate, SalaryStructureUpdate
-](SalaryStructure)
 
-
-@router.post("/", response_model=SalaryStructureOut)
-def create_salary_structure(
-    obj_in: SalaryStructureCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+@router.get("/", response_model=PaginatedSalaryStructureOut)
+def list_salary_structures(
+    params: PageParams = Depends(page_params),
+    controller: SalaryStructureController = Depends(),
 ):
-    return salary_structure_crud.create(
-        db=db,
-        obj_in=obj_in,
-        current_user=current_user,
+    return controller.list(
+        params,
     )
 
 
 @router.get("/{salary_structure_id}", response_model=SalaryStructureOut)
 def get_salary_structure(
     salary_structure_id: int,
-    db: Session = Depends(get_db),
+    controller: SalaryStructureController = Depends(),
 ):
-    return salary_structure_crud.get(db, salary_structure_id)
+    return controller.get(salary_structure_id)
 
 
-# @router.get("/", response_model=List[SalaryStructureOut])
-# def list_salary_structure(
-#     skip: int = 0,
-#     limit: int = 100,
-#     db: Session = Depends(get_db),
-# ):
-#     return salary_structure_crud.get_multi(db, skip=skip, limit=limit)
-
-
-@router.get("/", response_model=PaginatedSalaryStructureOut)
-def list_salary_structure(
-    page: int = Query(1, ge=1),
-    limit: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_db),
+@router.post("/", response_model=SalaryStructureOut)
+def create_salary_structure(
+    payload: SalaryStructureCreate,
+    controller: SalaryStructureController = Depends(),
 ):
-    skip = (page - 1) * limit
-    salary_structures, total = salary_structure_crud.get_multi_paginated(
-        db, skip=skip, limit=limit
-    )
-    total_pages = ceil(total / limit)
-    return {
-        "data": salary_structures,
-        "total": total,
-        "totalPages": total_pages,
-        "currentPage": page,
-    }
+    return controller.create(payload)
 
 
 @router.put("/{salary_structure_id}", response_model=SalaryStructureOut)
 def update_salary_structure(
     salary_structure_id: int,
-    obj_in: SalaryStructureUpdate,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    payload: SalaryStructureUpdate,
+    controller: SalaryStructureController = Depends(),
 ):
-    db_obj = salary_structure_crud.get(db, salary_structure_id)
-    return salary_structure_crud.update(
-        db=db,
-        db_obj=db_obj,
-        obj_in=obj_in,
-        current_user=current_user,
-    )
+    return controller.update(salary_structure_id, payload)
 
 
 @router.delete("/{salary_structure_id}", response_model=SalaryStructureOut)
 def delete_salary_structure(
     salary_structure_id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    controller: SalaryStructureController = Depends(),
 ):
-    return salary_structure_crud.remove(
-        db=db,
-        id=salary_structure_id,
-        current_user=current_user,
-    )
+    return controller.delete(salary_structure_id)

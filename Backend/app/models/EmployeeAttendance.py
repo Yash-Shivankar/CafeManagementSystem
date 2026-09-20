@@ -1,16 +1,20 @@
 from sqlalchemy import (
+    CheckConstraint,
     Column,
-    Integer,
     Date,
     DateTime,
     ForeignKey,
-    Enum as SQLEnum,
+    Index,
+    Integer,
     UniqueConstraint,
-    CheckConstraint,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
-from app.models.Enums import AttendanceStatus, AttendanceSession
+from app.models.Enums import AttendanceSession, AttendanceStatus, enum_values
 
 
 class EmployeeAttendance(Common):
@@ -26,9 +30,16 @@ class EmployeeAttendance(Common):
             "check_out IS NULL OR check_out >= check_in",
             name="ck_check_out_after_check_in",
         ),
+        Index("ix_employee_attendance_outlet_deleted", "outlet_id", "is_deleted"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    outlet_id = Column(
+        Integer,
+        ForeignKey("outlets.id"),
+        nullable=False,
+        index=True,
+    )
 
     employee_id = Column(
         Integer,
@@ -39,15 +50,15 @@ class EmployeeAttendance(Common):
     date = Column(Date, nullable=False)
 
     session = Column(
-        SQLEnum(AttendanceSession, name="attendance_session_enum"),
+        SQLEnum(AttendanceSession, name="attendance_session_enum", values_callable=enum_values),
         nullable=False,
     )
 
-    check_in = Column(DateTime, nullable=True)
-    check_out = Column(DateTime, nullable=True)
+    check_in = Column(DateTime(timezone=True), nullable=True)
+    check_out = Column(DateTime(timezone=True), nullable=True)
 
     status = Column(
-        SQLEnum(AttendanceStatus, name="attendance_status_enum"),
+        SQLEnum(AttendanceStatus, name="attendance_status_enum", values_callable=enum_values),
         nullable=False,
         default=AttendanceStatus.PRESENT,
     )
@@ -57,6 +68,8 @@ class EmployeeAttendance(Common):
         foreign_keys=[employee_id],
         back_populates="attendance_records",
     )
+
+    outlet = relationship("Outlet", foreign_keys=[outlet_id])
 
     def __repr__(self):
         return (

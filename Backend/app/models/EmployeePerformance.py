@@ -1,13 +1,15 @@
 from sqlalchemy import (
+    CheckConstraint,
     Column,
-    Integer,
-    Text,
     DateTime,
     ForeignKey,
-    CheckConstraint,
+    Index,
+    Integer,
+    Text,
     func,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
 
 
@@ -15,6 +17,7 @@ class EmployeePerformance(Common):
     __tablename__ = "employee_performance"
     __table_args__ = (
         CheckConstraint("rating >= 1 AND rating <= 5", name="ck_rating_range"),
+        Index("ix_employee_performance_is_deleted", "is_deleted"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
@@ -27,7 +30,7 @@ class EmployeePerformance(Common):
 
     rating = Column(Integer, nullable=False)
     feedback = Column(Text, nullable=True)
-    review_date = Column(DateTime, server_default=func.now())
+    review_date = Column(DateTime(timezone=True), server_default=func.now())
 
     employee = relationship(
         "EmployeeDetails",

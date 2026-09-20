@@ -1,15 +1,19 @@
 from sqlalchemy import (
+    CheckConstraint,
     Column,
-    Integer,
     DateTime,
     ForeignKey,
-    Enum as SQLEnum,
-    CheckConstraint,
+    Index,
+    Integer,
     func,
 )
+from sqlalchemy import (
+    Enum as SQLEnum,
+)
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
-from app.models.Enums import BookingStatus
+from app.models.Enums import BookingStatus, enum_values
 
 
 class Booking(Common):
@@ -19,9 +23,16 @@ class Booking(Common):
             "(service_id IS NOT NULL) OR (table_id IS NOT NULL)",
             name="ck_booking_service_or_table",
         ),
+        Index("ix_bookings_outlet_deleted", "outlet_id", "is_deleted"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    outlet_id = Column(
+        Integer,
+        ForeignKey("outlets.id"),
+        nullable=False,
+        index=True,
+    )
 
     user_id = Column(
         Integer,
@@ -48,18 +59,17 @@ class Booking(Common):
     )
 
     booking_date = Column(
-        DateTime,
+        DateTime(timezone=True),
         nullable=False,
         server_default=func.now(),
     )
 
     status = Column(
-        SQLEnum(BookingStatus, name="booking_status_enum"),
+        SQLEnum(BookingStatus, name="booking_status_enum", values_callable=enum_values),
         nullable=False,
         default=BookingStatus.SCHEDULED,
     )
 
-    # Relationships
     customer = relationship(
         "User",
         foreign_keys=[user_id],
@@ -83,6 +93,8 @@ class Booking(Common):
         foreign_keys=[table_id],
         back_populates="bookings",
     )
+
+    outlet = relationship("Outlet", foreign_keys=[outlet_id])
 
     def __repr__(self):
         return (

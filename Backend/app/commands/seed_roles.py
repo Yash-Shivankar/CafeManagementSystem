@@ -1,7 +1,7 @@
-# app/commands/seed_roles.py
+import typer
+
 from app.core.database import SessionLocal
 from app.models.Role import Role
-import typer
 
 DEFAULT_ROLES = [
     "SuperAdmin",
@@ -17,7 +17,7 @@ def seed_roles(
         False,
         "--reset",
         help="Delete existing roles before seeding",
-    )
+    ),
 ):
     db = SessionLocal()
 

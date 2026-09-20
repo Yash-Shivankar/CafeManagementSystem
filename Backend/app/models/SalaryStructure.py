@@ -1,11 +1,13 @@
 from sqlalchemy import (
     Column,
+    ForeignKey,
+    Index,
     Integer,
     Numeric,
-    ForeignKey,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
+
 from app.models.Common import Common
 
 
@@ -13,6 +15,7 @@ class SalaryStructure(Common):
     __tablename__ = "salary_structures"
     __table_args__ = (
         UniqueConstraint("employee_id", name="uq_employee_salary_structure"),
+        Index("ix_salary_structures_is_deleted", "is_deleted"),
     )
 
     id = Column(Integer, primary_key=True, index=True)

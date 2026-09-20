@@ -1,8 +1,8 @@
-# app/schemas/payment.py
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, Annotated, List
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.Enums import PaymentMethod
 from app.schemas.customer_invoice import CustomerInvoiceOut
 
@@ -11,7 +11,7 @@ class PaymentBase(BaseModel):
     invoice_id: int
     amount: Decimal
     method: PaymentMethod
-    payment_date: Optional[datetime] = None
+    payment_date: datetime | None = None
 
 
 class PaymentCreate(PaymentBase):
@@ -19,30 +19,27 @@ class PaymentCreate(PaymentBase):
 
 
 class PaymentUpdate(BaseModel):
-    amount: Optional[Decimal] = None
-    method: Optional[PaymentMethod] = None
-    payment_date: Optional[datetime] = None
+    amount: Decimal | None = None
+    method: PaymentMethod | None = None
+    payment_date: datetime | None = None
 
 
 class PaymentOut(BaseModel):
     id: int
-    invoice: Optional[CustomerInvoiceOut]
+    invoice: CustomerInvoiceOut | None
     amount: Decimal
     method: PaymentMethod
-    payment_date: Optional[datetime] = None
+    payment_date: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedPaymentOut(BaseModel):
-    data: List[PaymentOut]
+    data: list[PaymentOut]
     total: int
     totalPages: int
     currentPage: int

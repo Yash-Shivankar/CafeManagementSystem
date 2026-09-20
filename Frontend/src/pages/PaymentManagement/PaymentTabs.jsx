@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Tabs from "../../components/Tabs";
 import Payments from "./Payments";
 import Earnings from "./Earnings";
 
@@ -14,23 +15,16 @@ const PaymentTabs = () => {
 
   return (
     <div className="p-4 space-y-6">
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-6 border-b">
-        {tabs.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`pb-2 transition-all ${
-              activeTab === key ? "border-b-2 border-blue-500 font-bold" : ""
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <Tabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
 
-      {/* Tab Content */}
-      <div className="pt-2">{ActiveComponent && <ActiveComponent />}</div>
+      <div
+        role="tabpanel"
+        id={`tabpanel-${activeTab}`}
+        aria-labelledby={`tab-${activeTab}`}
+        className="pt-2"
+      >
+        {ActiveComponent && <ActiveComponent />}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, formatMoney } from "../../utils/format";
+import { useConfirm } from "../../components/useConfirm";
 import DataTable from "../../components/DataTable";
 import DynamicForm from "../../components/DynamicForm";
 import Modal from "../../components/Modal";
@@ -14,6 +16,7 @@ import {
 } from "../../app/allSlices";
 
 const Earnings = () => {
+  const confirm = useConfirm();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingEarning, setEditingEarning] = useState(null);
@@ -52,7 +55,7 @@ const Earnings = () => {
   const applyFilters = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(
-        ([_, value]) => value !== "" && value !== null && value !== undefined,
+        ([, value]) => value !== "" && value !== null && value !== undefined,
       ),
     );
 
@@ -68,30 +71,21 @@ const Earnings = () => {
 
   const columns = [
     { key: "id", label: "Id" },
-
     {
       key: "date",
       label: "Date",
-      render: (value) =>
-        new Date(value).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
+      render: (value) => formatDate(value),
     },
-
     {
       key: "revenue",
       label: "Revenue",
-      render: (v) => `₹ ${Number(v).toFixed(2)}`,
+      render: (v) => formatMoney(v),
     },
-
     {
       key: "expenses",
       label: "Expenses",
-      render: (v) => `₹ ${Number(v).toFixed(2)}`,
+      render: (v) => formatMoney(v),
     },
-
     {
       key: "profit",
       label: "Profit / Loss",
@@ -156,10 +150,15 @@ const Earnings = () => {
   };
 
   const handleDelete = async (row) => {
-    if (!window.confirm("Are you sure you want to delete this earning?"))
+    if (!(await confirm({
+        title: "Delete this earning?",
+        message:
+          "It will stop appearing in lists and reports. This cannot be undone from the app.",
+        tone: "danger",
+        confirmLabel: "Delete",
+        }))) {
       return;
-
-    try {
+    }try {
       await deleteEarning(row.id).unwrap();
       toast.success("Earning deleted successfully");
       refetch();

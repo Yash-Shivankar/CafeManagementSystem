@@ -1,7 +1,7 @@
 """initial tables
 
 Revision ID: 41562847d3f2
-Revises: 
+Revises:
 Create Date: 2025-12-27 18:59:35.159279
 
 """
@@ -411,4 +411,18 @@ def downgrade() -> None:
     op.drop_table('designations')
     op.drop_index(op.f('ix_departments_id'), table_name='departments')
     op.drop_table('departments')
-    # ### end Alembic commands ###
+
+    # The enum types outlive their tables in Postgres; dropping them is what
+    # makes a re-upgrade work rather than failing on "type already exists".
+    for enum_name in (
+        'attendance_session_enum',
+        'attendance_status_enum',
+        'booking_status_enum',
+        'employee_status_enum',
+        'employment_type_enum',
+        'incentive_type_enum',
+        'inventory_change_type_enum',
+        'invoice_status_enum',
+        'payment_method_enum',
+    ):
+        sa.Enum(name=enum_name).drop(op.get_bind(), checkfirst=True)

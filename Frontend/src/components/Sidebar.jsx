@@ -2,9 +2,13 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { sidebarMenu } from "../config/sidebarMenu";
+import { usePermissions } from "../services/usePermissions";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { canView } = usePermissions();
+
+  const visibleMenu = sidebarMenu.filter((item) => canView(item.module));
 
   return (
     <aside
@@ -18,7 +22,7 @@ const Sidebar = () => {
         color: "rgb(var(--color-text-primary))",
       }}
     >
-      {/* Header */}
+
       <div
         className="flex items-center justify-between px-3 py-2 border-b"
         style={{ borderColor: "rgb(var(--color-border))" }}
@@ -35,10 +39,9 @@ const Sidebar = () => {
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="py-2">
         <ul className="space-y-1 px-2">
-          {sidebarMenu.map((item) => {
+          {visibleMenu.map((item) => {
             const Icon = item.icon;
 
             return (

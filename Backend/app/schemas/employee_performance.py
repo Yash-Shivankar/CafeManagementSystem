@@ -1,14 +1,15 @@
-# app/schemas/employee_performance.py
 from datetime import datetime
-from typing import Optional, Annotated, List
-from pydantic import BaseModel, Field
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.schemas.employee_details import EmployeeDetailsOut
 
 
 class EmployeePerformanceBase(BaseModel):
     employee_id: int
     rating: Annotated[int, Field(ge=1, le=5)]
-    feedback: Optional[str] = None
+    feedback: str | None = None
 
 
 class EmployeePerformanceCreate(EmployeePerformanceBase):
@@ -16,29 +17,26 @@ class EmployeePerformanceCreate(EmployeePerformanceBase):
 
 
 class EmployeePerformanceUpdate(BaseModel):
-    rating: Optional[Annotated[int, Field(ge=1, le=5)]] = None
-    feedback: Optional[str] = None
+    rating: Annotated[int, Field(ge=1, le=5)] | None = None
+    feedback: str | None = None
 
 
 class EmployeePerformanceOut(BaseModel):
     id: int
-    employee: Optional[EmployeeDetailsOut]
+    employee: EmployeeDetailsOut | None
     rating: Annotated[int, Field(ge=1, le=5)]
-    feedback: Optional[str] = None
+    feedback: str | None = None
     review_date: datetime
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedEmployeePerformanceOut(BaseModel):
-    data: List[EmployeePerformanceOut]
+    data: list[EmployeePerformanceOut]
     total: int
     totalPages: int
     currentPage: int

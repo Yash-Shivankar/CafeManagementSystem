@@ -1,11 +1,11 @@
-# app/schemas/employee_details.py
 from datetime import date, datetime
-from typing import Optional, List
-from pydantic import BaseModel
-from app.models.Enums import EmploymentType, EmployeeStatus
-from app.schemas.user import UserOut
+
+from pydantic import BaseModel, ConfigDict
+
+from app.models.Enums import EmployeeStatus, EmploymentType
 from app.schemas.department import DepartmentOut
 from app.schemas.designation import DesignationOut
+from app.schemas.user import UserOut
 
 
 class EmployeeDetailsBase(BaseModel):
@@ -13,7 +13,7 @@ class EmployeeDetailsBase(BaseModel):
     employee_code: str
     joining_date: date
     employment_type: EmploymentType
-    status: Optional[EmployeeStatus] = EmployeeStatus.ACTIVE
+    status: EmployeeStatus | None = EmployeeStatus.ACTIVE
     department_id: int
     designation_id: int
 
@@ -23,36 +23,33 @@ class EmployeeDetailsCreate(EmployeeDetailsBase):
 
 
 class EmployeeDetailsUpdate(BaseModel):
-    joining_date: Optional[date] = None
-    employment_type: Optional[EmploymentType] = None
-    status: Optional[EmployeeStatus] = None
-    department_id: Optional[int] = None
-    designation_id: Optional[int] = None
-    employee_code: Optional[str] = None
+    joining_date: date | None = None
+    employment_type: EmploymentType | None = None
+    status: EmployeeStatus | None = None
+    department_id: int | None = None
+    designation_id: int | None = None
+    employee_code: str | None = None
 
 
 class EmployeeDetailsOut(EmployeeDetailsBase):
     id: int
-    user: Optional[UserOut]
+    user: UserOut | None
     employee_code: str
     joining_date: date
     employment_type: EmploymentType
-    status: Optional[EmployeeStatus] = EmployeeStatus.ACTIVE
-    department: Optional[DepartmentOut]
-    designation: Optional[DesignationOut]
+    status: EmployeeStatus | None = EmployeeStatus.ACTIVE
+    department: DepartmentOut | None
+    designation: DesignationOut | None
     created_at: datetime
     updated_at: datetime
-    created_by: Optional[int] = None
-    updated_by: Optional[int] = None
-    # deleted_at: Optional[datetime] = None
-    # is_deleted: Optional[bool] = False
+    created_by: int | None = None
+    updated_by: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedEmployeeDetailsOut(BaseModel):
-    data: List[EmployeeDetailsOut]
+    data: list[EmployeeDetailsOut]
     total: int
     totalPages: int
     currentPage: int
